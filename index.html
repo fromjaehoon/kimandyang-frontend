@@ -409,38 +409,29 @@
   .landing-nav .ln-item:hover{background:rgba(212,181,103,.14);color:#d4b567;transform:translateY(-1px)}
   .landing-nav .ln-item:active{transform:translateY(1px) scale(.96);background:rgba(212,181,103,.14);box-shadow:inset 0 2px 4px rgba(0,0,0,.15)}
   /* [2026-07-24] 기존엔 width:50%(넓은 직사각형)였던 것을, 정사각형에 가깝게 고정폭으로 축소 */
-  .landing-brand{position:relative;width:200px;height:200px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-    background:linear-gradient(155deg,#15233e,#22314f);overflow:hidden;border:1px solid rgba(212,181,103,.22);
-    padding:18px 14px;border-radius:16px;font-family:'Noto Serif KR',Georgia,'Times New Roman',serif;margin:24px auto 30px;box-shadow:0 10px 28px rgba(0,0,0,.4)}
-  /* 참고 이미지처럼 로고 위쪽에서 은은한 조명이 비치는 듯한 스포트라이트 효과 */
-  .landing-brand::before{content:'';position:absolute;top:-70px;left:50%;transform:translateX(-50%);
-    width:160px;height:160px;border-radius:50%;background:radial-gradient(circle, rgba(212,181,103,.32), rgba(212,181,103,0) 70%);pointer-events:none}
+  /* [2026-07-24] 사용자가 첨부한 레퍼런스 이미지 기준으로 재작업 — 카드 테두리/배경 박스, 모서리
+     리벳을 전부 없애고, 어두운 벽면(페이지 배경과 동일한 톤)에 로고와 글자가 "직접 부착/각인된
+     사인판"처럼 보이도록 함. 입체감은 박스 테두리가 아니라 위에서 비치는 스포트라이트와 브러시드
+     메탈 질감, 텍스트 엠보스 효과로만 표현. */
+  .landing-brand{position:relative;width:220px;height:220px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+    font-family:'Noto Serif KR',Georgia,'Times New Roman',serif;margin:24px auto 30px}
+  /* 로고 위쪽에서 은은한 조명이 비치는 스포트라이트 효과 — 벽면 자체를 밝히는 느낌 */
+  .landing-brand::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+    width:340px;height:280px;background:radial-gradient(ellipse at top, rgba(212,181,103,.28), rgba(212,181,103,0) 65%);pointer-events:none}
+  /* 벽면의 브러시드 메탈/리넨 질감 — 카드가 아니라 페이지 배경과 자연스럽게 이어지도록 은은하게만 */
+  .landing-brand::after{content:'';position:absolute;inset:-40px;z-index:-1;
+    background:repeating-linear-gradient(97deg, rgba(255,255,255,.02) 0 2px, rgba(0,0,0,0) 2px 7px);
+    -webkit-mask-image:radial-gradient(ellipse at 50% 40%, #000 55%, transparent 85%);
+    mask-image:radial-gradient(ellipse at 50% 40%, #000 55%, transparent 85%);pointer-events:none}
   .landing-brand>*{position:relative;z-index:1}
-  .landing-brand .brand-mark-svg{filter:drop-shadow(0 3px 10px rgba(0,0,0,.35))}
-  .landing-brand .brand-sub{font-size:10px;font-weight:600;letter-spacing:1.8px;color:#d4b567}
-  .landing-brand .brand-main{font-size:22px;font-weight:800;letter-spacing:3px;color:#fff;line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,.35)}
-  .landing-brand .brand-eng{font-size:8px;font-weight:600;letter-spacing:1.6px;color:rgba(212,181,103,.75);margin-top:1px}
-  .landing-brand .brand-sparkle{position:absolute;bottom:10px;right:14px;color:#d4b567;font-size:13px;opacity:.85}
-  /* [2026-07-24] 실제 기업명패(황동/브라스 명판)처럼 보이도록 이중 테두리 + 모서리 리벳(나사) +
-     오목새김(engrave) 텍스트 효과 + 브러시드 메탈 질감을 추가함 */
-  .landing-brand.nameplate{
-    background:
-      repeating-linear-gradient(100deg, rgba(255,255,255,.025) 0 2px, rgba(0,0,0,0) 2px 6px),
-      linear-gradient(155deg,#182741,#243657);
-    border:2px solid #d4b567;
-    box-shadow:0 10px 28px rgba(0,0,0,.45), inset 0 0 0 5px rgba(9,14,26,.55), inset 0 0 14px rgba(0,0,0,.35)}
-  .landing-brand.nameplate::after{content:'';position:absolute;inset:9px;z-index:0;
-    border:1px solid rgba(212,181,103,.45);border-radius:9px;pointer-events:none}
-  .plate-rivet{position:absolute;width:6px;height:6px;border-radius:50%;
-    background:radial-gradient(circle at 35% 35%, #f6e7bd, #a9812f 75%);box-shadow:0 1px 2px rgba(0,0,0,.55)}
-  .plate-rivet.rv-tl{top:7px;left:7px}
-  .plate-rivet.rv-tr{top:7px;right:7px}
-  .plate-rivet.rv-bl{bottom:7px;left:7px}
-  .plate-rivet.rv-br{bottom:7px;right:7px}
-  .plate-hr{display:block;width:66%;height:1px;margin:5px 0 3px;
-    background:linear-gradient(90deg, rgba(212,181,103,0), rgba(212,181,103,.7), rgba(212,181,103,0))}
-  .landing-brand.nameplate .brand-main{color:#f3e6c4;
+  .landing-brand .brand-mark-svg{filter:drop-shadow(0 3px 10px rgba(0,0,0,.4)) drop-shadow(0 0 18px rgba(212,181,103,.18))}
+  .landing-brand .brand-sub{font-size:10.5px;font-weight:600;letter-spacing:2px;color:#d4b567}
+  .landing-brand .brand-main{font-size:26px;font-weight:800;letter-spacing:4px;color:#f3e6c4;line-height:1.3;
     text-shadow:0 1px 0 rgba(255,255,255,.3), 0 -1px 1px rgba(0,0,0,.55), 0 3px 6px rgba(0,0,0,.5)}
+  .landing-brand .brand-eng{font-size:8.5px;font-weight:600;letter-spacing:1.8px;color:rgba(212,181,103,.75);margin-top:1px}
+  .landing-brand .brand-sparkle{position:absolute;bottom:6px;right:8px;color:#d4b567;font-size:13px;opacity:.85}
+  .plate-hr{display:block;width:60%;height:1px;margin:4px 0 2px;
+    background:linear-gradient(90deg, rgba(212,181,103,0), rgba(212,181,103,.6), rgba(212,181,103,0))}
   .landing-title{font-size:32px;font-weight:800;line-height:1.42;color:#f1f5f9;margin:0 0 16px}
   .landing-title .accent{color:#d4b567}
   .landing-lead{font-size:14.5px;color:rgba(226,232,240,.65);line-height:1.75;margin:0 0 34px}
@@ -714,11 +705,9 @@
       <span class="ln-item">의뢰현황</span>
     </nav>
 
-    <div class="landing-brand nameplate">
-      <span class="plate-rivet rv-tl"></span><span class="plate-rivet rv-tr"></span>
-      <span class="plate-rivet rv-bl"></span><span class="plate-rivet rv-br"></span>
+    <div class="landing-brand">
       <span class="brand-sparkle">✦</span>
-      <svg class="brand-mark-svg" width="52" height="52" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="8" width="84" height="84" rx="16" fill="none" stroke="#d4b567" stroke-width="5"/><path d="M34,20 L34,64 M34,48 L62,24 M34,64 L18,82 M34,64 L50,82" fill="none" stroke="#d4b567" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="62" cy="24" r="4.5" fill="#d4b567"/><circle cx="18" cy="82" r="4.5" fill="#d4b567"/><circle cx="50" cy="82" r="4.5" fill="#d4b567"/></svg>
+      <svg class="brand-mark-svg" width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="8" width="84" height="84" rx="16" fill="none" stroke="#d4b567" stroke-width="5"/><path d="M34,20 L34,64 M34,48 L62,24 M34,64 L18,82 M34,64 L50,82" fill="none" stroke="#d4b567" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="62" cy="24" r="4.5" fill="#d4b567"/><circle cx="18" cy="82" r="4.5" fill="#d4b567"/><circle cx="50" cy="82" r="4.5" fill="#d4b567"/></svg>
       <span class="brand-sub">사내AI부설기관</span>
       <span class="brand-main">김앤양</span>
       <span class="plate-hr"></span>
