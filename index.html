@@ -519,7 +519,10 @@
     font-size:12.5px;line-height:1.7;color:rgba(226,232,240,.9)}
   .lld-send-tag{margin-top:12px;display:inline-block;font-size:11.5px;font-weight:700;color:#4ade80;
     background:rgba(74,222,128,.12);border-radius:20px;padding:4px 11px}
-  .lld-assignee-row{border-radius:8px;padding:6px 8px;margin:2px 0}
+  /* 수신 행은 자동배정 강조용 하이라이트 박스를 위해 좌우 패딩(8px)을 갖는데, 그 8px 좌측 패딩이
+     제목/참조 행보다 라벨을 오른쪽으로 밀어 열이 어긋나 보였음 — margin-left:-8px로 상쇄해 라벨을
+     다시 정렬하고(하이라이트 박스만 살짝 좌측으로 확장), 세로 패딩 차이(6 vs 5px)도 맞춤 */
+  .lld-assignee-row{border-radius:8px;padding:5px 8px;margin:0 0 0 -8px}
   .lld-assignee-row.lld-emphasize{animation:lldAssignPulse 1.1s ease}
   @keyframes lldAssignPulse{
     0%{background:rgba(212,181,103,0);box-shadow:0 0 0 0 rgba(212,181,103,0)}
