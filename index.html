@@ -421,6 +421,26 @@
   .landing-brand .brand-main{font-size:22px;font-weight:800;letter-spacing:3px;color:#fff;line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,.35)}
   .landing-brand .brand-eng{font-size:8px;font-weight:600;letter-spacing:1.6px;color:rgba(212,181,103,.75);margin-top:1px}
   .landing-brand .brand-sparkle{position:absolute;bottom:10px;right:14px;color:#d4b567;font-size:13px;opacity:.85}
+  /* [2026-07-24] 실제 기업명패(황동/브라스 명판)처럼 보이도록 이중 테두리 + 모서리 리벳(나사) +
+     오목새김(engrave) 텍스트 효과 + 브러시드 메탈 질감을 추가함 */
+  .landing-brand.nameplate{
+    background:
+      repeating-linear-gradient(100deg, rgba(255,255,255,.025) 0 2px, rgba(0,0,0,0) 2px 6px),
+      linear-gradient(155deg,#182741,#243657);
+    border:2px solid #d4b567;
+    box-shadow:0 10px 28px rgba(0,0,0,.45), inset 0 0 0 5px rgba(9,14,26,.55), inset 0 0 14px rgba(0,0,0,.35)}
+  .landing-brand.nameplate::after{content:'';position:absolute;inset:9px;z-index:0;
+    border:1px solid rgba(212,181,103,.45);border-radius:9px;pointer-events:none}
+  .plate-rivet{position:absolute;width:6px;height:6px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #f6e7bd, #a9812f 75%);box-shadow:0 1px 2px rgba(0,0,0,.55)}
+  .plate-rivet.rv-tl{top:7px;left:7px}
+  .plate-rivet.rv-tr{top:7px;right:7px}
+  .plate-rivet.rv-bl{bottom:7px;left:7px}
+  .plate-rivet.rv-br{bottom:7px;right:7px}
+  .plate-hr{display:block;width:66%;height:1px;margin:5px 0 3px;
+    background:linear-gradient(90deg, rgba(212,181,103,0), rgba(212,181,103,.7), rgba(212,181,103,0))}
+  .landing-brand.nameplate .brand-main{color:#f3e6c4;
+    text-shadow:0 1px 0 rgba(255,255,255,.3), 0 -1px 1px rgba(0,0,0,.55), 0 3px 6px rgba(0,0,0,.5)}
   .landing-title{font-size:32px;font-weight:800;line-height:1.42;color:#f1f5f9;margin:0 0 16px}
   .landing-title .accent{color:#d4b567}
   .landing-lead{font-size:14.5px;color:rgba(226,232,240,.65);line-height:1.75;margin:0 0 34px}
@@ -694,11 +714,14 @@
       <span class="ln-item">의뢰현황</span>
     </nav>
 
-    <div class="landing-brand">
+    <div class="landing-brand nameplate">
+      <span class="plate-rivet rv-tl"></span><span class="plate-rivet rv-tr"></span>
+      <span class="plate-rivet rv-bl"></span><span class="plate-rivet rv-br"></span>
       <span class="brand-sparkle">✦</span>
       <svg class="brand-mark-svg" width="52" height="52" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="8" y="8" width="84" height="84" rx="16" fill="none" stroke="#d4b567" stroke-width="5"/><path d="M34,20 L34,64 M34,48 L62,24 M34,64 L18,82 M34,64 L50,82" fill="none" stroke="#d4b567" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="62" cy="24" r="4.5" fill="#d4b567"/><circle cx="18" cy="82" r="4.5" fill="#d4b567"/><circle cx="50" cy="82" r="4.5" fill="#d4b567"/></svg>
       <span class="brand-sub">사내AI부설기관</span>
       <span class="brand-main">김앤양</span>
+      <span class="plate-hr"></span>
       <span class="brand-eng">KIM &amp; YANG AI INSTITUTION</span>
     </div>
 
@@ -761,11 +784,16 @@
               <span class="lld-mail-badge">✨ AI 정제 완료</span>
               <div class="lld-mail-row"><span class="lld-mail-k">제목</span><span class="lld-mail-v">[발급/재발급] 신용등급 확인서 재발급 요청</span></div>
               <div class="lld-mail-row lld-assignee-row" id="lldAssigneeRow">
-                <span class="lld-mail-k">수신</span><span class="lld-mail-v lld-assignee-name">사업전략팀 김성준 대리님</span>
+                <span class="lld-mail-k">수신</span><span class="lld-mail-v lld-assignee-name">사업전략팀 담당자님</span>
                 <span class="lld-assign-badge">🎯 담당자 자동배정</span>
               </div>
-              <div class="lld-mail-row"><span class="lld-mail-k">참조</span><span class="lld-mail-v">사업전략팀 외 4명</span></div>
-              <div class="lld-mail-body">안녕하십니까. 신용등급 확인서 재발급을 요청드립니다. 확인 부탁드립니다.</div>
+              <div class="lld-mail-row"><span class="lld-mail-k">참조</span><span class="lld-mail-v">사업전략팀 사우님 외 4명</span></div>
+              <div class="lld-mail-body">
+                <p>안녕하십니까. 사업전략팀 담당자님.</p>
+                <p>최근 대표자 정보 변경으로 기존 신용등급 확인서의 효력이 만료되어, 원장상 대표자 정보 정정 절차와 함께 확인서 재발급을 요청드립니다. 재발급되는 확인서는 공공기관 입찰 서류로 바로 제출될 예정이라 빠른 처리를 부탁드립니다.</p>
+                <p>바쁘신 업무 중에 번거로운 요청을 드려 죄송합니다. 너른 양해 부탁드립니다.</p>
+                <p>협조해 주셔서 진심으로 감사합니다.</p>
+              </div>
               <div class="lld-send-tag">💬 아마란스 쪽지로 발송 완료</div>
             </div>
           </div>
