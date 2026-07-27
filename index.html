@@ -569,9 +569,14 @@
   .newsroom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   @media (max-width:900px){ .newsroom-grid{grid-template-columns:repeat(2,1fr)} }
   @media (max-width:600px){ .newsroom-grid{grid-template-columns:1fr} }
-  .newsroom-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;
+  .newsroom-card{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;
     transition:transform .15s ease,box-shadow .15s ease}
   .newsroom-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(15,23,42,.1);border-color:var(--blue)}
+  /* 관리자 모드에서만 노출되는 기사 삭제 버튼(우상단) */
+  .newsroom-card .nc-del{position:absolute;top:8px;right:8px;z-index:2;width:26px;height:26px;border-radius:8px;
+    border:none;background:rgba(15,23,42,.55);color:#fff;font-size:13px;font-weight:700;cursor:pointer;
+    display:grid;place-items:center;backdrop-filter:blur(2px);transition:background .15s ease}
+  .newsroom-card .nc-del:hover{background:var(--danger)}
   .newsroom-card .nc-thumb{width:100%;height:120px;display:block;object-fit:cover;background:var(--chip)}
   .newsroom-card .nc-body{padding:13px 14px}
   .newsroom-card .nc-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:6px}
@@ -5066,8 +5071,8 @@
           <div class="k">서비스 카테고리</div><div class="v"><span class="badge b-blue">${d.service||'-'}</span></div>
           <div class="k">사례 특성별 카테고리</div><div class="v"><span class="badge b-gray">${d.caseType||'-'}</span></div>
         </div>
-        <div class="doc-sec gray"><div class="h">❓ 요청 내용</div><div style="white-space:pre-wrap;line-height:1.7">${normalizeParagraphBreaks(d.q)}</div></div>
-        <div class="doc-sec"><div class="h">✅ 답변 내용</div><div style="white-space:pre-wrap;line-height:1.7">${normalizeParagraphBreaks(d.a)}</div></div>`;
+        <div class="doc-sec gray"><div class="h">❓ 요청 내용</div><div style="white-space:pre-wrap;line-height:1.7">${escapeHtml(formatCaseText(d.q))}</div></div>
+        <div class="doc-sec"><div class="h">✅ 답변 내용</div><div style="white-space:pre-wrap;line-height:1.7">${escapeHtml(formatCaseText(d.a))}</div></div>`;
       foot=`<button class="btn pri sm" onclick="closeDrawer()">닫기</button>`;
     } else if(kind==='reassign'){
       title='담당자 재지정'; sub=id+' · 조직도에서 담당자 선택';
@@ -6093,6 +6098,7 @@
     const sorted=[...NEWSROOM_ARTICLES].sort((a,b)=>b.date.localeCompare(a.date));
     el.innerHTML=sorted.map(a=>`
       <div class="newsroom-card" data-newsroom-id="${a.id}">
+        <button class="nc-del" type="button" data-admin-only data-news-del="${a.id}" title="기사 삭제">✕</button>
         <img class="nc-thumb" src="${newsroomThumbDataUri(a)}" alt="${escapeHtml(a.source)} 기사 이미지">
         <div class="nc-body">
           <div class="nc-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> ${a.date}</div>
@@ -6102,6 +6108,22 @@
       </div>`).join('');
     el.querySelectorAll('[data-newsroom-id]').forEach(card=>{
       card.addEventListener('click', ()=>openNewsroomArticle(card.dataset.newsroomId));
+    });
+    /* [2026-07-27] 관리자 모드에서만 노출되는 삭제 버튼 — 카드 클릭(기사 열기)과 겹치지 않도록
+       stopPropagation 후, 확인창을 거쳐 NEWSROOM_ARTICLES에서 제거하고 목록을 다시 그린다. */
+    el.querySelectorAll('[data-news-del]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        const id=btn.dataset.newsDel;
+        const art=NEWSROOM_ARTICLES.find(x=>x.id===id);
+        if(!art) return;
+        openConfirm('기사를 삭제할까요?', `"${art.title}" 기사를 뉴스룸 목록에서 삭제합니다.`, ()=>{
+          const idx=NEWSROOM_ARTICLES.findIndex(x=>x.id===id);
+          if(idx>=0) NEWSROOM_ARTICLES.splice(idx,1);
+          renderNewsroomList();
+          toast('✓ 기사가 삭제되었습니다');
+        });
+      });
     });
   }
   function openNewsroomArticle(id){
@@ -6769,6 +6791,19 @@
      연속된 개행(2개 이상)은 문단 구분용 빈 줄 1개로, 홑개행은 그대로 줄바꿈으로 정리한다. */
   function normalizeParagraphBreaks(s){
     return String(s||'').replace(/(\r\n|\r|\n){2,}/g, '\n\n').trim();
+  }
+  /* [2026-07-27] 사례모음 요청/답변 본문 가독성 정리 — 실제 QNA 답변이 줄바꿈 없이 한 덩어리로 들어와
+     읽기 어려운 경우가 많아, 번호 목록(1. 2. …) 항목마다 빈 줄을, '>' 답신·부연 마커마다 새 줄을
+     넣어 위쪽 요청 내용처럼 정리해 준다(pre-wrap로 렌더). 날짜(2025년 12월)처럼 점이 없는 숫자는
+     건드리지 않도록 '숫자+점+공백' 패턴만 항목으로 인식함. */
+  function formatCaseText(s){
+    var t=String(s||'').replace(/\r\n?/g, '\n');
+    t=t.replace(/\s*>\s*/g, '\n> ');                                  // '>' 답신 마커 → 새 줄
+    t=t.replace(/([^\n\d\s])\s*(\d{1,2}\.\s)/g, '$1\n\n$2');          // 번호 목록 항목 앞 빈 줄
+    t=t.replace(/([다요])([.!])(?=\s*\S)/g, '$1$2\n');                // 문장 종결(~다./~요.) 뒤 줄바꿈
+    t=t.replace(/([까죠])(\?)(?=\s*\S)/g, '$1$2\n');                  // 의문형 종결(~까?/~죠?) 뒤 줄바꿈
+    t=t.replace(/([^\n\s>])(감사합니다|감사드립니다|추가 문의)/g, '$1\n$2'); // 마침표 없이 붙은 종결·전환 어구 앞 줄바꿈
+    return t.replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
   }
   function appendChatBubble(role, html){
     const log=document.getElementById('guideChatLog');
