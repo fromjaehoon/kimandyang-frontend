@@ -6023,11 +6023,15 @@
   ];
   /* [2026-07-27] 사용자가 제공한 3D 렌더 참고 이미지(etc_image/Gemini_..._5munpj)에서 기사별로 매칭되는
      상위 6개 카드의 일러스트를 잘라(newsroom_img/N-0X.jpg) 실제 썸네일로 사용. img가 지정된 기사는
-     SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기). 나머지 기사는 생성 SVG 유지. */
-  ['N-01','N-02','N-03','N-04','N-05','N-06'].forEach(function(id){
-    var a=NEWSROOM_ARTICLES.find(function(x){ return x.id===id; });
-    if(a) a.img='newsroom_img/'+id+'.jpg';
-  });
+     SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기).
+     N-01~N-06은 매칭되는 전용 이미지, 나머지 기사는 이 6장을 랜덤으로 반복 사용(페이지 로드시 1회 고정 배정). */
+  (function assignNewsroomThumbs(){
+    var pool=['newsroom_img/N-01.jpg','newsroom_img/N-02.jpg','newsroom_img/N-03.jpg','newsroom_img/N-04.jpg','newsroom_img/N-05.jpg','newsroom_img/N-06.jpg'];
+    NEWSROOM_ARTICLES.forEach(function(a){
+      var n=parseInt((a.id||'').replace('N-',''),10);
+      a.img = (n>=1 && n<=6) ? pool[n-1] : pool[Math.floor(Math.random()*pool.length)];
+    });
+  })();
   function renderNewsroomList(){
     const el=document.getElementById('newsroomList');
     if(!el) return;
