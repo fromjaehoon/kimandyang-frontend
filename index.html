@@ -6021,6 +6021,13 @@
       content:'테크핀레이팅스가 신년 사업계획을 발표하고, 크레디뷰의 핵심 서비스 전반을 고도화하겠다는 방침을 밝혔다.\n\n구체적으로는 AI 경영진단보고서의 진단 항목 확대, 기업모니터링의 조기경보 알림 세분화, 기업DB조회의 검색 속도 개선이 주요 과제로 제시됐다.\n\n회사 관계자는 "매출채권 팩토링, 동반성장 네트워크론 등 금융 연계 서비스도 함께 확대해 데이터가 실제 자금 조달로 이어지는 흐름을 강화하겠다"고 밝혔다.'
     },
   ];
+  /* [2026-07-27] 사용자가 제공한 3D 렌더 참고 이미지(etc_image/Gemini_..._5munpj)에서 기사별로 매칭되는
+     상위 6개 카드의 일러스트를 잘라(newsroom_img/N-0X.jpg) 실제 썸네일로 사용. img가 지정된 기사는
+     SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기). 나머지 기사는 생성 SVG 유지. */
+  ['N-01','N-02','N-03','N-04','N-05','N-06'].forEach(function(id){
+    var a=NEWSROOM_ARTICLES.find(function(x){ return x.id===id; });
+    if(a) a.img='newsroom_img/'+id+'.jpg';
+  });
   function renderNewsroomList(){
     const el=document.getElementById('newsroomList');
     if(!el) return;
