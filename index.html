@@ -5858,7 +5858,10 @@
      바로가기"로 표기. 실제 이동 대상은 가상 도메인이 아니라(접속 오류 발생) 해당 기사 제목의 뉴스 검색
      결과로 연결해 항상 정상 동작하도록 함(데모 매체가 실존하지 않으므로 스크래핑 원문에 가장 근접한 대체). */
   function newsroomArticleUrl(a){
-    return 'https://search.naver.com/search.naver?where=news&query='+encodeURIComponent('크레디뷰 '+(a.title||''));
+    /* 실제 기사 원문 URL이 있으면 그 페이지로 직접 이동. 없으면(원문 URL 미확보) 해당 매체·제목의
+       뉴스 검색 결과로 연결해 항상 정상 동작하도록 함. */
+    if(a.url) return a.url;
+    return 'https://search.naver.com/search.naver?where=news&query='+encodeURIComponent((a.source? a.source+' ':'')+(a.title||'크레디뷰'));
   }
   /* 카테고리별 입체(광택+그림자) 글리프 — 라인 아이콘 대신 채워진 형태로 그려 3D 렌더에 가까운 느낌을 냄 */
   function newsroomGlyph(cat){
@@ -6021,10 +6024,62 @@
       content:'테크핀레이팅스가 신년 사업계획을 발표하고, 크레디뷰의 핵심 서비스 전반을 고도화하겠다는 방침을 밝혔다.\n\n구체적으로는 AI 경영진단보고서의 진단 항목 확대, 기업모니터링의 조기경보 알림 세분화, 기업DB조회의 검색 속도 개선이 주요 과제로 제시됐다.\n\n회사 관계자는 "매출채권 팩토링, 동반성장 네트워크론 등 금융 연계 서비스도 함께 확대해 데이터가 실제 자금 조달로 이어지는 흐름을 강화하겠다"고 밝혔다.'
     },
   ];
-  /* [2026-07-27] 사용자가 제공한 3D 렌더 참고 이미지(etc_image/Gemini_..._5munpj)에서 기사별로 매칭되는
-     상위 6개 카드의 일러스트를 잘라(newsroom_img/N-0X.jpg) 실제 썸네일로 사용. img가 지정된 기사는
-     SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기).
-     N-01~N-06은 매칭되는 전용 이미지, 나머지 기사는 이 6장을 랜덤으로 반복 사용(페이지 로드시 1회 고정 배정). */
+  /* [2026-07-27] 뉴스룸 기사를 실제 '크레디뷰' 관련 언론 보도로 교체 — 위 예시 데이터는 폐기하고, 구글/
+     네이버 뉴스에 실제로 노출된 기사들의 헤드라인·출처·날짜를 기준으로 정리함. 본문(content)은 원문을
+     복제하지 않고 공개된 사실만 간결히 요약했으며, 각 기사 원문 URL로 직접 연결함(newsroomArticleUrl). */
+  var CV_LAUNCH='더존비즈온의 핀테크 전문 계열사 테크핀레이팅스가 AI 기반 기업신용평가플랫폼 ‘크레디뷰(Crediview)’를 선보였다.\n\n크레디뷰는 회원가입 후 인증서만 등록하면 별도의 서류 제출 없이 기업신용평가등급을 실시간으로 조회·산출할 수 있는 것이 특징이다. 기업신용평가와 함께 AI 경영진단, 기업 모니터링 등의 서비스도 함께 제공한다.\n\n회사는 중소기업과 개인사업자·소상공인의 금융 접근성을 높이는 데 초점을 맞추고 있다고 밝혔다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
+  var CV_BID='테크핀레이팅스가 기업신용평가플랫폼 ‘크레디뷰’에 조달청 나라장터 실시간 연계 기능을 더해, 기업의 공공입찰 준비 과정을 대폭 단축했다.\n\n크레디뷰에서 회원가입과 인증서 등록만 하면 약 30분 이내에 신용평가등급이 산출되며, 등급 조회부터 확인서 신청·발급, 조달청 제출까지 원스톱으로 처리할 수 있다.\n\n회사는 기존 며칠씩 걸리던 절차를 없애 업계 최저 수준의 비용으로 법인·개인사업자의 공공조달시장 참여를 넓히겠다고 밝혔다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
+  var CV_FACT='테크핀레이팅스가 중소기업이 보유한 매출채권을 비대면으로 빠르게 현금화할 수 있도록 지원하는 서비스를 준비하고 있다고 밝혔다.\n\n국내 기업금융 특화 신용평가(CB) 플랫폼 사업자로서 팩토링 신청부터 실행까지 전 과정을 비대면으로 처리할 수 있는 기업정보조회 기반을 마련한다는 계획이다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
+  NEWSROOM_ARTICLES.length=0;
+  NEWSROOM_ARTICLES.push(
+    { id:'N-01', source:'한국세정신문', category:'공공조달', date:'2025-05-13', color:'#2563eb',
+      title:'더존 테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 준비 하루만에 끝낸다',
+      summary:'크레디뷰가 조달청 나라장터와 실시간 연계돼, 기업이 공공입찰에 필요한 신용평가등급 조회부터 확인서 발급까지 하루 만에 마칠 수 있게 됐다.', content:CV_BID },
+    { id:'N-02', source:'전자신문', category:'공공조달', date:'2025-05-13', color:'#0e7490',
+      title:'테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 “하루면 완결”',
+      summary:'조달청 나라장터 연계로 등급 산출부터 확인서 제출까지 원스톱 처리가 가능해져 공공입찰 준비 기간이 크게 줄었다.', content:CV_BID, url:'https://www.etnews.com/20250513000102' },
+    { id:'N-03', source:'파이낸셜뉴스', category:'공공조달', date:'2025-05-13', color:'#9333ea',
+      title:'더존 테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 준비 ‘하루면 완결’',
+      summary:'회원가입과 인증서 등록만으로 30분 이내에 신용평가등급을 산출해 공공조달시장 진입을 지원한다.', content:CV_BID, url:'https://www.fnnews.com/news/202505131006419269' },
+    { id:'N-04', source:'디지털투데이', category:'공공조달', date:'2025-05-13', color:'#16a34a',
+      title:'테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 시장 공략 가속',
+      summary:'업계 최저 수준의 비용과 나라장터 실시간 연계를 앞세워 법인·개인사업자의 공공조달시장 참여 확대를 유도한다.', content:CV_BID, url:'https://www.digitaltoday.co.kr/news/articleView.html?idxno=565856' },
+    { id:'N-05', source:'강원일보', category:'공공조달', date:'2025-05-13', color:'#d97706',
+      title:'더존 테크핀레이팅스 ‘크레디뷰’로 기업 공공입찰 준비 하루만에',
+      summary:'별도 서류 제출 없이 등급 조회·확인서 발급·조달청 제출을 한 번에 처리해 준비 기간을 하루로 단축했다.', content:CV_BID, url:'https://m.kwnews.co.kr/page/view/2025051310104039194' },
+    { id:'N-06', source:'브릿지경제(비바100)', category:'서비스 출시', date:'2025-04-08', color:'#0891b2',
+      title:'테크핀레이팅스, AI 기반 기업신용평가플랫폼 ‘크레디뷰’ 출시',
+      summary:'AI 기술로 기업별 맞춤형 신용등급을 실시간 산출하는 크레디뷰가 정식 출시됐다.', content:CV_LAUNCH, url:'https://www.viva100.com/article/20250408501005' },
+    { id:'N-07', source:'딜사이트', category:'서비스 출시', date:'2025-04-07', color:'#2563eb',
+      title:'테크핀레이팅스, AI 신용평가플랫폼 ‘크레디뷰’ 출시',
+      summary:'더존비즈온의 핀테크 계열사 테크핀레이팅스가 AI 신용평가플랫폼 크레디뷰를 출시하고 기업신용등급 조회 서비스를 시작했다.', content:CV_LAUNCH, url:'https://dealsite.co.kr/articles/139483/089060' },
+    { id:'N-08', source:'전자신문', category:'서비스 출시', date:'2025-04-07', color:'#7c3aed',
+      title:'더존 테크핀레이팅스, AI로 신용평가 제공 ‘크레디뷰’ 출시',
+      summary:'인증서 등록만으로 서류 제출 없이 즉시 기업신용평가를 받을 수 있는 AI 플랫폼을 선보였다.', content:CV_LAUNCH, url:'https://v.daum.net/v/20250407092902702' },
+    { id:'N-09', source:'서울경제', category:'서비스 출시', date:'2025-04-07', color:'#be123c',
+      title:'더존 테크핀레이팅스, 기업신용평가 플랫폼 ‘크레디뷰’ 공개',
+      summary:'더존의 데이터 역량과 AI 기술을 바탕으로 기업신용평가·경영진단·모니터링 서비스를 제공한다.', content:CV_LAUNCH, url:'https://www.sedaily.com/NewsView/2GRFGYSZFP' },
+    { id:'N-10', source:'한국경제', category:'서비스 출시', date:'2025-04-07', color:'#16a34a',
+      title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
+      summary:'별도 서류나 복잡한 절차 없이 기업신용평가등급 조회부터 확인서 발급까지 원스톱으로 처리한다.', content:CV_LAUNCH, url:'https://www.hankyung.com/article/202504074296P' },
+    { id:'N-11', source:'ZDNet Korea', category:'서비스 출시', date:'2025-04-07', color:'#9333ea',
+      title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
+      summary:'중소기업과 소상공인의 금융 접근성 제고를 목표로 실시간 기업신용평가 서비스를 공개했다.', content:CV_LAUNCH, url:'https://zdnet.co.kr/view/?no=20250407180121' },
+    { id:'N-12', source:'아이티데일리', category:'서비스 출시', date:'2025-04-07', color:'#0e7490',
+      title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
+      summary:'조달청 나라장터 연계 등 실시간 자동 전송 시스템을 갖춘 기업신용평가플랫폼을 공개했다.', content:CV_LAUNCH },
+    { id:'N-13', source:'데이터넷', category:'서비스 출시', date:'2025-04-07', color:'#2563eb',
+      title:'테크핀레이팅스, AI 기반 기업신용평가플랫폼 ‘크레디뷰’ 출시',
+      summary:'AI 기술과 신뢰도 높은 데이터를 바탕으로 기업별 맞춤형 신용등급을 실시간 산출한다.', content:CV_LAUNCH, url:'https://www.datanet.co.kr/news/articleView.html?idxno=201075' },
+    { id:'N-14', source:'택스워치', category:'서비스 출시', date:'2025-04-07', color:'#d97706',
+      title:'더존비즈온 테크핀레이팅스, AI 기업신용평가플랫폼 ‘크레디뷰’ 출시',
+      summary:'무료 기업신용등급 조회 서비스와 함께 크레디뷰가 정식 출시됐다.', content:CV_LAUNCH, url:'https://www.taxwatch.co.kr/article/tax/2025/04/07/0003' },
+    { id:'N-15', source:'택스워치', category:'금융서비스', date:'2024-07-22', color:'#be123c',
+      title:'더존 테크핀레이팅스, 중기 ‘매출채권 비대면 현금화’ 지원',
+      summary:'국내 기업금융 특화 CB 플랫폼 사업자로서 매출채권 팩토링 신청부터 실행까지 비대면 처리를 지원한다.', content:CV_FACT, url:'https://www.taxwatch.co.kr/article/tax/2024/07/22/0001' }
+  );
+  /* [2026-07-27] 사용자가 제공한 3D 렌더 참고 이미지(etc_image/Gemini_..._5munpj)에서 잘라낸 썸네일 6장을
+     기사에 반복 배정. img가 지정된 기사는 SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기). */
   (function assignNewsroomThumbs(){
     var pool=['newsroom_img/N-01.jpg','newsroom_img/N-02.jpg','newsroom_img/N-03.jpg','newsroom_img/N-04.jpg','newsroom_img/N-05.jpg','newsroom_img/N-06.jpg'];
     NEWSROOM_ARTICLES.forEach(function(a){
@@ -7124,6 +7179,11 @@
       runAiTyping(currentGuideQuery).then(()=>{
         /* AI 분석이 끝나면 R&R 매칭 결과로 수신자+참조를 자동 채움(추천이 없으면 조용히 건너뜀 — 수동 선택/버튼 이용) */
         autoAssignRecipient({silent:true});
+        /* [2026-07-27] 좌측 "정제된 요청 내용"의 수신/참조는 항상 우측 "수신자 지정" 패널의 값을 기준으로
+           동기화한다(우측이 단일 진실 공급원). autoAssignRecipient가 매칭에 실패해 우측이 비어 있으면
+           좌측도 "수신자 미지정"으로 맞춰, 좌우가 서로 다른 값을 보이던 문제를 방지함. */
+        updateAiMailToFromRecipients();
+        updateAiMailCcFromRecipients();
         /* AI 정제 설정 > "답변사례 자동 추천" 옵션이 켜져 있으면 정제된 요청 내용 하단에 유사 사례를 노출 */
         if(typeof renderCaseRecommendSection==='function') renderCaseRecommendSection();
         /* [2026-07-27] 전자결재 관련 문의면 유사답변사례 하단에 참고문서(예시화면+결재라인+복사) 노출 */
