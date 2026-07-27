@@ -55,6 +55,14 @@
   .gnb-search input{border:none;background:transparent;padding:0;font:inherit;color:inherit;width:100%}
   .gnb-search input:focus{outline:none;box-shadow:none}
   .gnb-spacer{flex:1}
+  /* [2026-07-27] 우측 상단 계정 옆 사용자/관리자 모드 세그먼트 스위치 — 관리자 모드에서만 설정 메뉴 노출 */
+  .mode-switch{display:inline-flex;background:var(--chip);border:1px solid var(--line);border-radius:20px;
+    padding:2px;flex-shrink:0;margin-right:10px;user-select:none}
+  .mode-switch button{border:none;background:transparent;font-family:inherit;font-size:11.5px;font-weight:700;
+    color:var(--muted);padding:5px 12px;border-radius:16px;cursor:pointer;transition:background .15s ease,color .15s ease}
+  .mode-switch button.on{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25)}
+  .mode-switch button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  .admin-only-hidden{display:none !important}
   .who{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 8px;border-radius:10px;flex-shrink:0}
   .who:hover{background:rgba(37,99,235,.08)}
   .avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0}
@@ -717,7 +725,7 @@
       <span class="brand-eng">KIM &amp; YANG AI INSTITUTION</span>
     </div>
 
-    <h1 class="landing-title">궁금증이 있다면, <span class="accent">김앤양</span>에게</h1>
+    <h1 class="landing-title">업무 중 궁금할 땐 <span class="accent">김앤양</span>에게</h1>
     <p class="landing-lead">의뢰 접수부터 AI의견서 출력, 담당자 자동배정, 아마란스 쪽지 발송까지 진행됩니다.<br>김앤양은 회사의 모든 업무 요청을 한 곳에서 정리하고 연결합니다.</p>
 
     <button class="btn pri landing-cta-wide" id="landingLoginBtnTop">로그인</button>
@@ -877,10 +885,11 @@
         <div class="gnb-item" data-go="hub-cases"><span class="ic">🗂</span> 사례모음</div>
         <div class="gnb-item" data-go="hub-faq"><span class="ic">❓</span> FAQ</div>
         <div class="gnb-item" data-go="newsroom"><span class="ic">📰</span> 뉴스룸</div>
-        <!-- [2026-07-23] AI 정제 설정도 설정▾ 드롭다운에서 대메뉴로 승격(사용자 요청) -->
-        <div class="gnb-item" data-go="template"><span class="ic">🧩</span> AI 정제 설정</div>
+        <!-- [2026-07-23] AI 정제 설정도 설정▾ 드롭다운에서 대메뉴로 승격(사용자 요청)
+             [2026-07-27] data-admin-only: 사용자 모드에서는 숨기고 관리자 모드에서만 노출 -->
+        <div class="gnb-item" data-go="template" data-admin-only><span class="ic">🧩</span> AI 정제 설정</div>
         <!-- [2026-07-16] 사용자 요청으로 설정▾ 메뉴 복구 (외부시스템 연동은 앞서 별도 요청으로 제거했던 항목이라 제외 유지) -->
-        <div class="gnb-dropdown" data-dropdown>
+        <div class="gnb-dropdown" data-dropdown data-admin-only>
           <div class="gnb-item gnb-trigger">설정 <span class="gnb-caret">▾</span></div>
           <div class="gnb-menu">
             <div class="gnb-menu-item" data-go="org"><span class="ic">🏢</span> 조직관리</div>
@@ -889,6 +898,10 @@
         </div>
       </nav>
       <div class="gnb-spacer"></div>
+      <div class="mode-switch" id="modeSwitch" role="group" aria-label="사용자·관리자 모드 전환">
+        <button type="button" data-mode="user">사용자</button>
+        <button type="button" data-mode="admin">관리자</button>
+      </div>
       <div class="who" id="whoBtn"><span id="whoLabel"></span><div class="avatar" id="whoAvatar"></div></div>
 
       <div class="profile-pop" id="profilePop">
@@ -935,7 +948,7 @@
         <div class="banner"> ... 이하 예전 대시보드 콘텐츠는 git 이력 또는 이전 세션 기록 참고 ... </div>
         -->
         <div class="home-hero">
-          <h1>궁금증이 있다면, <span class="accent">김앤양</span>에게</h1>
+          <h1>업무 중 궁금할 땐 <span class="accent">김앤양</span>에게</h1>
           <p>의뢰 접수부터 AI의견서 출력, 담당자 자동배정, 아마란스 쪽지 발송까지 진행됩니다.</p>
         </div>
         <div class="home-search">
@@ -993,17 +1006,9 @@
                 <span class="chip" data-cat="기타">기타</span>
               </div>
             </div>
-            <div class="field" style="max-width:200px;margin-bottom:10px">
-              <label style="font-size:11.5px">발송형식 <span class="muted" style="font-weight:400">— 문서 정제 뉘앙스에 반영됩니다</span></label>
-              <select id="intakeChannelSelect">
-                <option value="메일">메일</option>
-                <option value="고객 VOC">고객 VOC</option>
-                <option value="회의 메모">회의 메모</option>
-                <option value="쪽지">쪽지</option>
-                <option value="메신저">메신저</option>
-                <option value="기타">기타</option>
-              </select>
-            </div>
+            <!-- [2026-07-27] 발송형식은 '쪽지' 하나로 통일 — 화면 선택 UI는 제거하고, 기존 코드가
+                 참조하는 #intakeChannelSelect는 값이 '쪽지'로 고정된 hidden select로만 남겨 로직 호환 유지 -->
+            <select id="intakeChannelSelect" style="display:none"><option value="쪽지" selected>쪽지</option></select>
             <div class="actions" style="justify-content:flex-start;margin:0 0 16px">
               <button class="btn pri" id="guideAskBtn">🔍 확인하기</button>
               <button class="btn sm" id="guideResetBtn">✕ 초기화</button>
@@ -1563,13 +1568,16 @@
           <div class="actions"><button class="btn pri sm">저장</button></div>
         </div>
 
+        <!-- [2026-07-27] 발송형식을 '쪽지' 하나로 통일하면서 발송형식별 표/문서 스타일(직접요청형·접수전달형)
+             구분을 없애고, '문장 스타일'(고객응대용/요청스타일/문의스타일) 프리셋 선택으로 단순화 -->
         <div class="card mt">
-          <h3>발송형식별 문서 스타일 <span class="tag">요청등록 발송형식에 따른 정제 뉘앙스 설정</span></h3>
-          <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div><b>직접 요청형</b>은 요청자 본인이 스스로 문의사항이 있어 처리담당자에게 요청하는 뉘앙스의 문장으로, <b>접수 전달형</b>은 고객 등 외부에서 접수된 내용을 그대로 전달하며 답변을 요청하는 뉘앙스의 문장으로 정제됩니다. 발송형식별로 어떤 스타일을 적용할지 관리자가 아래에서 설정할 수 있습니다.</div></div>
-          <table>
-            <thead><tr><th>발송형식</th><th>문서 스타일</th><th>정제 예시 문장</th></tr></thead>
-            <tbody id="channelToneBody"></tbody>
-          </table>
+          <h3>문장 스타일 <span class="tag">요청 정제 시 적용할 문장 톤</span></h3>
+          <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 요청 내용을 어떤 톤의 문장으로 정제할지 선택합니다. 선택한 스타일이 정제 결과 문장에 반영됩니다.</div></div>
+          <div class="row" id="sentenceStyleCards">
+            <div class="presetcard on" data-style="요청스타일"><div class="t">요청스타일</div><div class="ex">"아래 사항에 대한 확인 및 조치를 요청드립니다."</div></div>
+            <div class="presetcard" data-style="고객응대용"><div class="t">고객응대용</div><div class="ex">"고객님께 안내드립니다. 확인 후 회신드리겠습니다."</div></div>
+            <div class="presetcard" data-style="문의스타일"><div class="t">문의스타일</div><div class="ex">"관련하여 궁금한 점이 있어 문의드립니다. 확인 부탁드립니다."</div></div>
+          </div>
         </div>
 
         <div class="card mt">
@@ -1917,6 +1925,12 @@
       await loadRequestsFromBackend();
     }catch(e){
       toast('⚠ 백엔드 데이터 로드 실패: '+e.message);
+    }
+    /* 로그인한 계정의 권한(isAdmin)에 따라 초기 모드를 정함 — 관리자 계정은 관리자 모드로 시작,
+       일반 계정은 사용자 모드로 시작. 이후 우측 상단 스위치로 언제든 전환 가능(데모용). */
+    if(typeof applyUserMode==='function'){
+      const me=findMember(CURRENT_USER_ID);
+      applyUserMode(me && me.member && me.member.isAdmin ? 'admin' : 'user');
     }
   }
 
@@ -2577,7 +2591,8 @@
     "메일":"direct", "고객 VOC":"relay", "회의 메모":"direct", "쪽지":"direct", "메신저":"direct", "기타":"direct",
   };
   function currentIntakeChannel(){
-    return document.getElementById('intakeChannelSelect')?.value || '메일';
+    /* [2026-07-27] 발송형식은 '쪽지'로 통일 — 선택 UI가 제거되어 항상 '쪽지'를 반환 */
+    return document.getElementById('intakeChannelSelect')?.value || '쪽지';
   }
   function toneLabel(tone){ return tone==='relay' ? '접수 전달형' : '직접 요청형'; }
   /* [2026-07-24] AI 정제 설정 > 발송형식별 문서 스타일 — 예전엔 톤(직접요청형/접수전달형)마다 예시 문장이
@@ -2636,7 +2651,20 @@
       });
     });
   }
-  renderChannelToneTable();
+  renderChannelToneTable(); /* #channelToneBody가 제거되어 내부에서 안전하게 no-op 됨 (레거시 함수 유지) */
+
+  /* [2026-07-27] 문장 스타일 프리셋 선택 — 고객응대용/요청스타일/문의스타일 중 하나를 기본 정제 스타일로 지정.
+     프로토타입 데모용 상태값으로만 보관(현재 정제 로직은 쪽지·기본 톤을 사용). */
+  let sentenceStyle='요청스타일';
+  document.querySelectorAll('#sentenceStyleCards .presetcard').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('#sentenceStyleCards .presetcard').forEach(c=>c.classList.remove('on'));
+      card.classList.add('on');
+      sentenceStyle=card.dataset.style;
+      toast(`✓ 문장 스타일: ${sentenceStyle}`);
+    });
+  });
+
   /* 답변등록 > "정제된 요청" — 요청등록/AI분석결과와 동일한 메일 서식·정제 로직을 그대로 재사용해
      담당자 화면에서도 형식이 완전히 일치하도록 함(문서를 두 군데서 서로 다르게 만들지 않도록 단일 로직 공유). */
   function renderAnswerReqMail(){
@@ -5376,6 +5404,29 @@
     document.getElementById('whoAvatar').textContent=f.member.name.charAt(0);
   }
 
+  /* [2026-07-27] 우측 상단 사용자/관리자 모드 스위치 — data-admin-only가 붙은 GNB 메뉴(AI 정제 설정,
+     설정▾)를 관리자 모드에서만 노출하고 사용자 모드에서는 숨긴다. 프로토타입 데모용 수동 전환이며,
+     현재 열려 있던 화면이 숨겨진 관리자 메뉴였다면 홈(대시보드)으로 안전하게 되돌린다. */
+  let currentAppMode='admin';
+  function applyUserMode(mode){
+    currentAppMode = (mode==='user') ? 'user' : 'admin';
+    document.querySelectorAll('#modeSwitch button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===currentAppMode);
+    });
+    const adminEls=document.querySelectorAll('[data-admin-only]');
+    adminEls.forEach(el=>el.classList.toggle('admin-only-hidden', currentAppMode!=='admin'));
+    /* 사용자 모드로 바꿨는데 지금 보고 있는 화면이 관리자 전용 화면이면 홈으로 이동 */
+    if(currentAppMode==='user'){
+      const adminScreens=['template','org','admin','extsys'];
+      const cur=document.querySelector('.screen.show');
+      if(cur && adminScreens.includes(cur.id)) go('dash');
+    }
+    toast(currentAppMode==='admin' ? '🛡 관리자 모드' : '👤 사용자 모드', 1400);
+  }
+  document.querySelectorAll('#modeSwitch button').forEach(btn=>{
+    btn.addEventListener('click', ()=>applyUserMode(btn.dataset.mode));
+  });
+
   /* ===== 확인(컨펌) 다이얼로그 ===== */
   function openConfirm(title, msg, onOk){
     document.getElementById('confirmTitle').textContent=title;
@@ -5787,10 +5838,69 @@
 
   /* ===== 뉴스룸 — 외부 매체·블로그의 크레디뷰(CREDIVIEW) 관련 보도 모음 (데모용 예시 데이터) =====
      실제 매체와 무관한 가상의 채널명을 사용함(특정 언론사를 사칭하지 않기 위함). 이미지도 외부 URL이
-     아니라 인라인 SVG로 생성해 별도 자산 없이 자체 완결적으로 동작함. */
-  function newsroomThumbDataUri(label, color){
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220"><rect width="400" height="220" fill="${color}"/>`+
-      `<text x="50%" y="50%" font-family="sans-serif" font-size="22" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${label}</text></svg>`;
+     아니라 인라인 SVG로 생성해 별도 자산 없이 자체 완결적으로 동작함.
+     [2026-07-27] 기존엔 단색 배경 + 채널명 텍스트뿐이라 밋밋했던 것을, 실제 기사 썸네일처럼 보이도록
+     그라데이션 + 카테고리별 모티프(데이터 차트/따옴표/그래프/네트워크 등) + 채널·카테고리 라벨을 그린
+     편집 일러스트 스타일로 개편함(여전히 100% 인라인 SVG라 외부 이미지 로딩 없이 동작). */
+  var NEWSROOM_SOURCE_DOMAIN={
+    '테크핀 저널':'techfin-journal.co.kr',
+    '금융IT 리포트':'fnit-report.co.kr',
+    '스타트업 위클리':'startup-weekly.co.kr',
+    '디지털금융신문':'dfin-news.co.kr',
+    'B2B 테크 블로그':'b2b-techblog.co.kr',
+    '핀테크 오늘':'fintech-today.co.kr',
+    '산업경제리뷰':'ind-econ-review.co.kr',
+  };
+  /* 각 기사가 실제로 노출된(가상) 매체 페이지 URL — 채널 도메인 + 기사 id 기반 */
+  function newsroomArticleUrl(a){
+    var domain=NEWSROOM_SOURCE_DOMAIN[a.source]||'news-wire.co.kr';
+    return 'https://'+domain+'/article/'+String(a.id||'').toLowerCase();
+  }
+  /* 카테고리별 편집 일러스트 모티프(SVG 조각) — 흰색 반투명으로 그려 배경 그라데이션 위에 얹음 */
+  function newsroomMotif(cat){
+    var st='fill="none" stroke="rgba(255,255,255,.9)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
+    switch(cat){
+      case '인터뷰':
+        return '<path d="M250 70 h70 a10 10 0 0 1 10 10 v40 a10 10 0 0 1 -10 10 h-40 l-20 20 v-20 a10 10 0 0 1 -10 -10 v-40 a10 10 0 0 1 10 -10 z" '+st+'/><path d="M268 92 h34 M268 104 h22" '+st+'/>';
+      case '투자':
+        return '<polyline points="248,150 278,120 300,132 336,86" '+st+'/><path d="M320 86 h16 v16" '+st+'/><path d="M248 150 v-70 M248 150 h96" stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none"/>';
+      case '블로그':
+        return '<path d="M256 128 l52 -52 20 20 -52 52 -26 6 z" '+st+'/><path d="M300 84 l20 20" '+st+'/>';
+      case '파트너십':
+        return '<circle cx="278" cy="100" r="22" '+st+'/><circle cx="312" cy="100" r="22" '+st+'/>';
+      case '인물':
+        return '<circle cx="292" cy="90" r="20" '+st+'/><path d="M258 148 a34 30 0 0 1 68 0" '+st+'/>';
+      case '수상':
+        return '<circle cx="292" cy="92" r="24" '+st+'/><path d="M280 112 l-8 34 20 -12 20 12 -8 -34" '+st+'/>';
+      default: /* 서비스 등 — 데이터 카드/차트 모티프 */
+        return '<rect x="250" y="78" width="86" height="60" rx="6" '+st+'/><path d="M262 122 v-14 M278 122 v-26 M294 122 v-10 M310 122 v-20 M326 122 v-30" stroke="rgba(255,255,255,.9)" stroke-width="6" stroke-linecap="round"/>';
+    }
+  }
+  /* 색상을 어둡게 — 그라데이션 하단 스톱용(#rrggbb 입력 가정) */
+  function darkenHex(hex, f){
+    var m=/^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m) return hex;
+    var n=parseInt(m[1],16), r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+    r=Math.round(r*f); g=Math.round(g*f); b=Math.round(b*f);
+    return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }
+  function newsroomThumbDataUri(a){
+    var c=a.color, c2=darkenHex(c,.55);
+    var motif=newsroomMotif(a.category);
+    var esc=function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var svg=
+      '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220">'+
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'+
+      '<stop offset="0" stop-color="'+c+'"/><stop offset="1" stop-color="'+c2+'"/></linearGradient></defs>'+
+      '<rect width="400" height="220" fill="url(#g)"/>'+
+      '<circle cx="70" cy="180" r="120" fill="rgba(255,255,255,.06)"/>'+
+      '<circle cx="360" cy="30" r="80" fill="rgba(255,255,255,.05)"/>'+
+      motif+
+      '<rect x="0" y="150" width="400" height="70" fill="rgba(8,13,24,.28)"/>'+
+      '<text x="26" y="42" font-family="sans-serif" font-size="15" font-weight="700" fill="rgba(255,255,255,.92)">'+esc(a.source)+'</text>'+
+      '<rect x="24" y="176" width="150" height="8" rx="4" fill="rgba(255,255,255,.85)"/>'+
+      '<rect x="24" y="192" width="96" height="7" rx="3.5" fill="rgba(255,255,255,.55)"/>'+
+      '<text x="376" y="42" text-anchor="end" font-family="sans-serif" font-size="11" font-weight="700" fill="rgba(255,255,255,.85)">'+esc(a.category)+'</text>'+
+      '</svg>';
     return 'data:image/svg+xml,'+encodeURIComponent(svg);
   }
   const NEWSROOM_ARTICLES=[
@@ -5901,7 +6011,7 @@
     const sorted=[...NEWSROOM_ARTICLES].sort((a,b)=>b.date.localeCompare(a.date));
     el.innerHTML=sorted.map(a=>`
       <div class="newsroom-card" data-newsroom-id="${a.id}">
-        <img class="nc-thumb" src="${newsroomThumbDataUri(a.source, a.color)}" alt="">
+        <img class="nc-thumb" src="${newsroomThumbDataUri(a)}" alt="${escapeHtml(a.source)} 기사 이미지">
         <div class="nc-body">
           <div class="nc-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> ${a.date}</div>
           <div class="nc-title">${escapeHtml(a.title)}</div>
@@ -5912,19 +6022,18 @@
       card.addEventListener('click', ()=>openNewsroomArticle(card.dataset.newsroomId));
     });
   }
-  /* 기사들이 공통으로 다루는 실제 서비스(크레디뷰) 홈페이지 — 사례모음 답변에서도 이미 참조되는
-     실제 도메인(crediview.co.kr)을 그대로 재사용함(새로 지어낸 주소가 아님). */
-  const CREDIVIEW_SITE_URL='https://crediview.co.kr';
   function openNewsroomArticle(id){
     const a=NEWSROOM_ARTICLES.find(x=>x.id===id);
     if(!a) return;
+    /* [2026-07-27] "크레디뷰 사이트"가 아니라 해당 기사가 실제 노출된 매체 페이지로 이동하도록 변경.
+       각 기사별 URL(newsroomArticleUrl)로 새 탭에서 열고, 링크 문구는 "사이트로 바로가기"로 통일. */
     document.getElementById('newsroomModalBody').innerHTML=`
-      <img class="nm-thumb" src="${newsroomThumbDataUri(a.source, a.color)}" alt="">
+      <img class="nm-thumb" src="${newsroomThumbDataUri(a)}" alt="${escapeHtml(a.source)} 기사 이미지">
       <div class="nm-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> <span class="badge b-blue">${escapeHtml(a.category)}</span> ${a.date}</div>
       <div class="nm-title">${escapeHtml(a.title)}</div>
       <div class="nm-content">${escapeHtml(a.content)}</div>
       <div style="margin-top:18px">
-        <a class="btn pri sm" href="${CREDIVIEW_SITE_URL}" target="_blank" rel="noopener noreferrer">🔗 크레디뷰 사이트 바로가기</a>
+        <a class="btn pri sm" href="${newsroomArticleUrl(a)}" target="_blank" rel="noopener noreferrer">🔗 사이트로 바로가기</a>
       </div>`;
     document.getElementById('newsroomOverlay').classList.add('show');
     document.getElementById('newsroomModal').classList.add('show');
@@ -6444,6 +6553,51 @@
       copyTextToClipboard(document.getElementById('approvalDraftText').value);
     });
   }
+
+  /* [2026-07-27] 전자결재 관련 문의일 때 '아마란스로 요청하기' 정제 결과 하단(#guideApprovalRef)에 노출하는
+     참고문서 — 예시 화면(결재 미리보기 표) + 결재라인 + 복사하기(문서 전체 텍스트) 로 구성. 별도 액션 버튼
+     없이 참고용으로만 함께 보여준다. */
+  function isApprovalQuery(query){
+    if(findApprovalCase(query)) return true;
+    const g=findWorkGuide(query);
+    if(g && g.needsApproval) return true;
+    const q=(query||'');
+    return ['전자결재','결재','기안','상신','품의','결재라인','방화벽','계정 등록','계정등록','계정 발급'].some(k=>q.includes(k));
+  }
+  /* 참고문서 전체를 하나의 복사용 텍스트로 합침(결재라인/협의/수신참조 + 결재 초안 본문) */
+  function buildApprovalRefText(c){
+    const lines=[];
+    lines.push(`[결재라인] ${c.approvalLine}`);
+    if(c.agreement) lines.push(`[협의] ${c.agreement}`);
+    if(c.recipients) lines.push(`[수신·참조] ${c.recipients}`);
+    lines.push('');
+    lines.push(fillApprovalTemplate(c.draftTemplate));
+    return lines.join('\n');
+  }
+  function renderApprovalReference(query){
+    const box=document.getElementById('guideApprovalRef');
+    if(!box) return;
+    const c=findApprovalCase(query);
+    if(!c){ box.innerHTML=''; return; }
+    box.innerHTML=`
+      <label class="muted" style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">참고문서 <span style="font-weight:400">— 전자결재가 필요한 요청으로 보여 관련 예시 화면과 결재라인을 함께 안내합니다</span></label>
+      <div class="ai-doc" style="padding:14px 16px">
+        <div class="kv" style="margin-bottom:12px;grid-template-columns:76px 1fr">
+          <div class="k">문서</div><div class="v">${escapeHtml(c.previewTitle||c.approvalType)}</div>
+          <div class="k">결재라인</div><div class="v">${escapeHtml(c.approvalLine)}</div>
+          ${c.agreement?`<div class="k">협의</div><div class="v">${escapeHtml(c.agreement)}</div>`:''}
+          ${c.recipients?`<div class="k">수신·참조</div><div class="v">${escapeHtml(c.recipients)}</div>`:''}
+        </div>
+        <div class="muted" style="font-size:11.5px;font-weight:600;margin-bottom:5px">예시 화면</div>
+        <div class="doc-preview-wrap" style="max-height:260px;overflow:auto">${approvalPreviewTableHTML(c)}</div>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px">
+          <button class="btn sm pri" id="approvalRefCopyBtn" type="button">📋 참고문서 복사하기</button>
+        </div>
+      </div>`;
+    document.getElementById('approvalRefCopyBtn')?.addEventListener('click', ()=>{
+      copyTextToClipboard(buildApprovalRefText(c));
+    });
+  }
   /* [2026-07-16] "처리절차 확인하기" — 결재케이스에 procedureSteps가 있으면 세로형 타임라인 + 첨부양식
      다운로드 박스로 안내. WORK_GUIDES(휴가/법인카드) 절차 안내와는 별개 렌더 경로임 */
   function approvalProcedureHTML(c){
@@ -6572,18 +6726,27 @@
     }
     currentGuideMatch=findWorkGuide(query);
     const guide=currentGuideMatch;
-    const introHtml = guide
-      ? `말씀하신 내용은 <b>"${escapeHtml(guide.title)}"</b>와 관련된 것으로 보입니다. 아래에서 원하시는 처리 방식을 선택해 주세요.`
-      : `말씀하신 내용을 확인했습니다. 담당자 확인이 필요한 요청으로 보입니다. 아래에서 원하시는 처리 방식을 선택해 주세요.`;
-    appendChatBubble('bot', introHtml);
-    resultBox.innerHTML=`
-      <div class="chips" id="guideActionChips">
-        <span class="chip" data-action="assign">Amaranth <b class="amaranth10-num">10</b> 아마란스로 요청하기</span>
-        <span class="chip" data-action="approval">📋 전자결재 초안만들기</span>
-        <span class="chip" data-action="procedure">🧭 처리절차 확인하기</span>
-      </div>
-      <div id="guideActionContent" class="mt10"></div>`;
-    wireGuideActionChips();
+    /* [2026-07-27] 사용자 요청으로 흐름 간소화 — 확인하기를 누르면 처리 방식 선택 칩(아마란스 요청/전자결재
+       초안/처리절차) 없이 곧바로 "아마란스로 요청하기" 액션으로 진입한다. 전자결재 관련 문의인 경우엔
+       정제 결과 하단에 '참고문서'(예시 화면 + 결재라인 + 복사)가 함께 노출된다(renderGuideAction 참고).
+       ── 복원용(RESTORE-CHIPS): 아래 주석 블록을 살리고 그 아래 2줄(introHtml/renderGuideAction 직접호출)을
+          지우면 예전 3-칩 선택 UI가 그대로 복구됨.
+      const introHtml = guide
+        ? `말씀하신 내용은 <b>"${escapeHtml(guide.title)}"</b>와 관련된 것으로 보입니다. 아래에서 원하시는 처리 방식을 선택해 주세요.`
+        : `말씀하신 내용을 확인했습니다. 담당자 확인이 필요한 요청으로 보입니다. 아래에서 원하시는 처리 방식을 선택해 주세요.`;
+      appendChatBubble('bot', introHtml);
+      resultBox.innerHTML=`
+        <div class="chips" id="guideActionChips">
+          <span class="chip" data-action="assign">Amaranth <b class="amaranth10-num">10</b> 아마란스로 요청하기</span>
+          <span class="chip" data-action="approval">📋 전자결재 초안만들기</span>
+          <span class="chip" data-action="procedure">🧭 처리절차 확인하기</span>
+        </div>
+        <div id="guideActionContent" class="mt10"></div>`;
+      wireGuideActionChips();
+    */
+    appendChatBubble('bot', '말씀하신 내용을 확인했습니다. 아래와 같이 정제하여 담당자에게 아마란스 쪽지로 요청드릴 수 있도록 준비했습니다.');
+    resultBox.innerHTML=`<div id="guideActionContent" class="mt10"></div>`;
+    renderGuideAction('assign');
   }
   /* 동적으로 생성된 칩이라 전역 .chip 단일선택 스크립트가 적용되지 않으므로 직접 토글 + 선택 시 콘텐츠 렌더링 */
   function wireGuideActionChips(){
@@ -6629,6 +6792,7 @@
             </div>
           </div>
           <div id="caseRecommendSection" style="margin-top:14px"></div>
+          <div id="guideApprovalRef" style="margin-top:14px"></div>
         </div>
         <div class="card" style="flex:1;min-width:300px">
           <h3>아마란스 쪽지 발송 <span class="tag amaranth10-badge">Amaranth 10</span></h3>
@@ -6935,6 +7099,8 @@
         autoAssignRecipient({silent:true});
         /* AI 정제 설정 > "답변사례 자동 추천" 옵션이 켜져 있으면 정제된 요청 내용 하단에 유사 사례를 노출 */
         if(typeof renderCaseRecommendSection==='function') renderCaseRecommendSection();
+        /* [2026-07-27] 전자결재 관련 문의면 유사답변사례 하단에 참고문서(예시화면+결재라인+복사) 노출 */
+        if(typeof renderApprovalReference==='function') renderApprovalReference(currentGuideQuery);
       });
       return;
     }
