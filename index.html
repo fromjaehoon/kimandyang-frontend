@@ -62,7 +62,9 @@
     color:var(--muted);padding:5px 12px;border-radius:16px;cursor:pointer;transition:background .15s ease,color .15s ease}
   .mode-switch button.on{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25)}
   .mode-switch button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-  .admin-only-hidden{display:none !important}
+  /* [2026-07-27] 사용자 모드에서는 data-admin-only 요소를 전부 숨김 — body 클래스 기반이라
+     동적으로 다시 그려지는 목록(정책·약관 수정/삭제 버튼 등)에도 별도 재적용 없이 자동 반영됨 */
+  body.app-mode-user [data-admin-only]{display:none !important}
   .who{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 8px;border-radius:10px;flex-shrink:0}
   .who:hover{background:rgba(37,99,235,.08)}
   .avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0}
@@ -1408,7 +1410,7 @@
                 <span class="chip" data-service="기업DB">기업DB</span>
                 <span class="chip" data-service="금융중개">금융중개</span>
               </div>
-              <div class="drop" id="docsUploadBtn" style="cursor:pointer;margin-bottom:14px">📎 문서를 끌어다 놓거나 클릭하여 업로드 (xlsx · docx · pptx · pdf)</div>
+              <div class="drop" id="docsUploadBtn" data-admin-only style="cursor:pointer;margin-bottom:14px">📎 문서를 끌어다 놓거나 클릭하여 업로드 (xlsx · docx · pptx · pdf)</div>
               <input type="file" id="docsFileInput" accept=".xlsx,.docx,.doc,.pptx,.pdf" style="display:none">
               <div id="docsDocList"></div>
             </div>
@@ -5413,8 +5415,9 @@
     document.querySelectorAll('#modeSwitch button').forEach(b=>{
       b.classList.toggle('on', b.dataset.mode===currentAppMode);
     });
-    const adminEls=document.querySelectorAll('[data-admin-only]');
-    adminEls.forEach(el=>el.classList.toggle('admin-only-hidden', currentAppMode!=='admin'));
+    /* body 클래스로 data-admin-only 요소 노출 여부를 일괄 제어(동적 목록에도 자동 반영) */
+    document.body.classList.toggle('app-mode-user', currentAppMode==='user');
+    document.body.classList.toggle('app-mode-admin', currentAppMode==='admin');
     /* 사용자 모드로 바꿨는데 지금 보고 있는 화면이 관리자 전용 화면이면 홈으로 이동 */
     if(currentAppMode==='user'){
       const adminScreens=['template','org','admin','extsys'];
@@ -5476,7 +5479,7 @@
       <div class="docrow" data-docid="${d.id}">
         <div class="dr-ic">${docIcon(d.ext)}</div>
         <div class="dr-info"><div class="dr-name">${d.name}.${d.ext} ${d.cat?`<span class="badge b-gray" style="margin-left:6px">${d.cat}</span>`:''}${d.service?`<span class="badge b-blue" style="margin-left:4px">${d.service}</span>`:''}</div><div class="dr-date">${d.date} 등록</div></div>
-        <div class="dr-actions">
+        <div class="dr-actions" data-admin-only>
           <button class="btn sm" data-action="edit">수정</button>
           <button class="btn sm danger" data-action="del">삭제</button>
         </div>
