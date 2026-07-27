@@ -667,6 +667,15 @@
   .policy-scan-line{font-size:12.5px;line-height:1.9;color:var(--muted);padding:1px 0;white-space:pre-wrap}
   .policy-scan-line.hit{background:var(--danger-soft);border-radius:6px;margin:0 -8px;padding:3px 8px}
   .policy-scan-line .hit-text{color:var(--danger);font-weight:800}
+  /* [2026-07-27] 확인경로 브레드크럼 — 검색 결과가 어느 문서 몇 조에서 확인됐는지 표시 */
+  .policy-path{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px;padding-top:10px;
+    border-top:1px dashed rgba(37,99,235,.25);font-size:12px}
+  .policy-path .pp-ic{font-size:13px}
+  .policy-path .pp-lbl{font-weight:800;color:var(--blue);margin-right:2px}
+  .policy-path .pp-seg{background:#fff;border:1px solid var(--line);border-radius:7px;padding:3px 9px;
+    font-weight:600;color:var(--ink)}
+  .policy-path .pp-sep{color:var(--muted);font-weight:700}
+  .policy-path .pp-clause{background:var(--blue);border-color:var(--blue);color:#fff}
   /* 스캔 중임을 강조하는 가로 스윕 라인 — 실제 스크롤과 별개로 "지금 훑어보는 중"이라는 인상을 주는 장식용 연출 */
   .policy-scan-sweep{position:absolute;left:0;right:0;top:0;height:40px;pointer-events:none;opacity:0;
     background:linear-gradient(to bottom,transparent,rgba(37,99,235,.16) 45%,rgba(147,51,234,.22) 50%,rgba(37,99,235,.16) 55%,transparent)}
@@ -2728,7 +2737,7 @@
     }
   }
   document.getElementById('intakeToneSelect')?.addEventListener('change', function(){ selectedToneKey=this.value; });
-  document.getElementById('intakeSentenceSelect')?.addEventListener('change', function(){ selectedSentenceKey=this.value; applyStyleSignature(); });
+  document.getElementById('intakeSentenceSelect')?.addEventListener('change', function(){ selectedSentenceKey=this.value; });
   function currentToneGuide(){ const p=TONE_PRESETS.find(x=>x.key===selectedToneKey); return p? p.guide : ''; }
   function currentSentencePhrase(){ const p=SENTENCE_PRESETS.find(x=>x.key===selectedSentenceKey); return p? p.phrase : ''; }
   /* 선택한 문장 스타일을 정제 문서 하단에 서명처럼 적용(선택 없으면 숨김) */
@@ -2738,6 +2747,30 @@
     const phrase=currentSentencePhrase();
     if(phrase){ el.textContent=phrase; el.classList.remove('hide'); }
     else { el.textContent=''; el.classList.add('hide'); }
+  }
+  /* [2026-07-27] AI 연동 오류 시에만 쓰는 로컬 기본 정제 — 선택한 문어체/문장스타일/카테고리의 기본값으로
+     최소한의 정제 문서를 구성한다(문장 스타일은 서명 라인으로 표시). */
+  function composeLocalFallbackRefinement(raw, opts, els){
+    const { category }=opts||{};
+    const { greetEl, senderEl, contentEl, closingEl, thanksEl, subjectEl, badge, myToken }=els||{};
+    if(myToken!==undefined && myToken!==aiRunToken) return;
+    const f=findMember(CURRENT_USER_ID);
+    const senderLine = f ? `${f.dept.dept} ${f.team.team} ${f.member.name}입니다.` : '';
+    const catPart = category ? `${category} 관련하여 ` : '';
+    const rawTrim=(raw||'').trim();
+    const content = `${catPart}문의드릴 사항이 있어 쪽지드립니다.${rawTrim? ' '+rawTrim : ''}`;
+    if(subjectEl) subjectEl.textContent=`[문의] ${category||'업무'} 관련 확인 요청`;
+    if(greetEl) greetEl.textContent='안녕하십니까.';
+    if(senderEl) senderEl.textContent=senderLine;
+    if(contentEl) contentEl.textContent=content;
+    if(closingEl) closingEl.textContent='바쁘신 업무 중에 번거로운 요청을 드려 죄송합니다. 너른 양해 부탁드립니다.';
+    if(thanksEl) thanksEl.textContent='협조해 주셔서 진심으로 감사합니다.';
+    applyStyleSignature(); /* 문장 스타일을 서명 라인으로 표시(로컬 폴백) */
+    const styleTag=document.getElementById('styleAppliedTag');
+    if(styleTag){ const tp=TONE_PRESETS.find(x=>x.key===selectedToneKey); styleTag.textContent=`문어체: ${tp?tp.label:'기본'} · 오프라인`; }
+    const toneTag=document.getElementById('channelToneTag');
+    if(toneTag){ const sp=SENTENCE_PRESETS.find(x=>x.key===selectedSentenceKey); toneTag.textContent = sp? `문장 스타일: ${sp.label}` : ''; }
+    if(badge) badge.textContent='✨ 기본 정제 (오프라인)';
   }
   renderStyleAdmin();
   populateIntakePresetSelects();
@@ -2840,14 +2873,19 @@
     const toneProfile=CHANNEL_TONE_CONFIG[channel] || 'direct';
     /* [2026-07-27] 의뢰하기에서 선택한 문어체의 어투 지침 + 관리자 커스텀 지침을 합쳐 정제 어투로 전달 */
     const styleGuide=[currentToneGuide(), (document.getElementById('customStyleGuide')?.value||'').trim()].filter(Boolean).join(' ');
+    /* [2026-07-27] 선택한 문어체(styleGuide)·문장스타일(sentenceStyle)·서비스 카테고리(category)를 모두
+       백엔드로 보내 AI가 그에 맞게 실제로 다른 정제 결과를 만들게 함. */
+    const sentenceStyle=currentSentencePhrase();
+    const category=currentGuideCategory||'';
     let result;
     try{
-      result=await apiFetch('/requests', {method:'POST', body:JSON.stringify({rawText:raw, channel, styleGuide, toneProfile})});
+      result=await apiFetch('/requests', {method:'POST', body:JSON.stringify({rawText:raw, channel, styleGuide, toneProfile, category, sentenceStyle})});
     }catch(e){
       if(myToken!==aiRunToken) return;
-      badge.textContent='⚠ AI 분석 실패';
-      contentEl.textContent=e.message||'백엔드 호출에 실패했습니다.';
-      toast('⚠ AI 분석 실패: '+(e.message||''));
+      /* [2026-07-27] API 연동 오류 시에만 로컬 기본 정제로 폴백 — 선택한 문어체/문장스타일/카테고리
+         기본값으로 문서를 구성해 최소한의 정제 결과를 보여줌(오프라인/키오류 상황 대비). */
+      composeLocalFallbackRefinement(raw, {category, sentenceStyle, toneProfile}, {greetEl,senderEl,contentEl,closingEl,thanksEl,subjectEl,badge,myToken});
+      toast('⚠ AI 연동 오류 — 기본 문어체/문장스타일로 정제했습니다', 2600);
       return;
     }
     if(myToken!==aiRunToken) return;
@@ -2890,9 +2928,12 @@
     updateMailCc();
     if(subjectEl) subjectEl.textContent=analysis.mailSubject;
     const styleTag=document.getElementById('styleAppliedTag');
-    if(styleTag) styleTag.textContent=styleGuide.trim()? '커스텀 문어체 지침 적용' : '기본 표준 문어체';
+    if(styleTag){ const tp=TONE_PRESETS.find(x=>x.key===selectedToneKey); styleTag.textContent=`문어체: ${tp?tp.label:'기본 표준 문어체'}`; }
     const toneTag=document.getElementById('channelToneTag');
-    if(toneTag) toneTag.textContent=`발송형식: ${channel} (${toneLabel(analysis.toneProfile)})`;
+    if(toneTag){ const sp=SENTENCE_PRESETS.find(x=>x.key===selectedSentenceKey); toneTag.textContent = sp? `문장 스타일: ${sp.label}` : ''; }
+    /* [2026-07-27] 문장 스타일은 이제 AI가 contentParagraph 마무리에 반영하므로, 고정 서명 라인은 숨김(중복 방지) */
+    const styleLineEl=document.getElementById('aiStyleLine');
+    if(styleLineEl){ styleLineEl.textContent=''; styleLineEl.classList.add('hide'); }
     badge.textContent='✨ AI 분석 중…';
 
     typewriter(greetEl, analysis.greeting, 70, myToken, ()=>aiRunToken, ()=>{
@@ -5731,6 +5772,7 @@
       ],
       hitLineIdx:6, hitText:'발급 오류로 인한 재발급은 수수료를 면제한다',
       resultHtml:'<b>서비스 이용약관 제7조 3항</b>에 의하면 "발급 오류로 인한 재발급은 수수료를 면제한다"고 명시되어 있습니다.',
+      service:'기업신용평가', docFile:'서비스 이용약관.pdf', clause:'제7조 3항',
     },
     {
       keywords:['개인정보','보관','파기'],
@@ -5746,6 +5788,7 @@
       ],
       hitLineIdx:4, hitText:'관계 법령에 따라 5년간 보관 후 파기한다',
       resultHtml:'<b>개인정보 처리방침 제5조</b>에 의하면 "회원 탈퇴 시 개인정보는 지체 없이 파기하되, 관계 법령에 따라 5년간 보관 후 파기한다"고 명시되어 있습니다.',
+      service:'기업DB', docFile:'개인정보 처리방침.pdf', clause:'제5조',
     },
     {
       keywords:['결제','환불','정산','취소'],
@@ -5760,6 +5803,7 @@
       ],
       hitLineIdx:2, hitText:'결제 취소는 결제일로부터 7일 이내 신청 시 전액 환불한다',
       resultHtml:'<b>결제·정산 규정 제3조</b>에 의하면 "결제 취소는 결제일로부터 7일 이내 신청 시 전액 환불한다"고 명시되어 있습니다.',
+      service:'금융중개', docFile:'결제·정산 규정.pdf', clause:'제3조',
     },
   ];
   function findPolicyMatch(query){
@@ -5825,7 +5869,11 @@
           scanInner.style.transform=`translateY(-${targetScroll}px)`;
         }
         scanLabel.textContent=`✓ ${entry.docName}에서 근거 조항을 찾았습니다`;
-        resultBox.innerHTML=`<div class="alert blue"><span>ℹ</span><div>${entry.resultHtml}</div></div>`;
+        /* [2026-07-27] 확인경로(출처) 브레드크럼 — 어느 문서의 몇 조에서 확인됐는지 명확히 표시 */
+        const pathHtml=(entry.service||entry.docFile||entry.clause)
+          ? `<div class="policy-path"><span class="pp-ic">📄</span><span class="pp-lbl">확인경로</span>${entry.service?`<span class="pp-seg">${escapeHtml(entry.service)}</span>`:''}${entry.docFile?`<span class="pp-sep">›</span><span class="pp-seg">${escapeHtml(entry.docFile)}</span>`:''}${entry.clause?`<span class="pp-sep">›</span><span class="pp-seg pp-clause">${escapeHtml(entry.clause)}</span>`:''}</div>`
+          : '';
+        resultBox.innerHTML=`<div class="alert blue"><span>ℹ</span><div>${entry.resultHtml}${pathHtml}</div></div>`;
       }else{
         scanLabel.textContent=`${entry.docName} 검색 완료 — 일치 조항 없음`;
         resultBox.innerHTML=`<div class="alert warn"><span>⚠</span><div>"${query}"에 대한 일치하는 조항을 찾지 못했습니다. 다른 키워드로 검색해보세요.</div></div>`;
@@ -6903,6 +6951,7 @@
   /* 마지막으로 매칭된 절차(있으면) — "전자결재 상신"/"처리절차 확인" 선택 시 이 값을 그대로 사용 */
   let currentGuideMatch=null;
   let currentGuideQuery='';
+  let currentGuideCategory='';   /* [2026-07-27] 선택한 서비스 카테고리 — 정제 단계까지 유지해 백엔드로 전달 */
   /* 입력 내용의 의도/목적을 요약해 보여주고, 처리 방식(담당자 요청/전자결재/절차확인) 선택지를 제시 */
   function renderGuideResult(query){
     const resultBox=document.getElementById('guideResultBox');
@@ -7364,6 +7413,9 @@
   function runGuideSearch(query, category){
     const myToken=++guideRunToken;
     lastGuideQuery=query;
+    /* [2026-07-27] 선택한 서비스 카테고리를 정제 단계까지 유지 — runAiTyping에서 백엔드로 전달해
+       모호한 원문도 해당 서비스 맥락으로 정확히 정제되도록 함(예: 기업신용평가 관련 문의). */
+    currentGuideCategory=category||'';
     const catTag=category? `<span class="badge b-blue" style="margin-bottom:5px;display:inline-block">${escapeHtml(category)}</span><br>` : '';
     appendChatBubble('user', catTag+escapeHtml(query));
     const progressBox=document.getElementById('guideProgressBox');
