@@ -3293,17 +3293,21 @@
   /* ===== 조직 데이터 (단일 소스 — 여기서 바뀌면 전체 화면에 즉시 반영됨) ===== */
   /* 2026-07-20: 조직관리에서 사업성장본부(하위 포함) 외 전 부서(평가본부/영업본부/IT본부/경영지원본부)를
      삭제 — DB(agent-backend)에서 먼저 삭제하고, 이 정적 fallback 배열도 그대로 맞춰 동기화함(로그인 전
-     잠깐 참조되는 초기값이라 실제 화면은 로그인 직후 /api/org 실데이터로 즉시 교체됨). 기존 admin이던
-     이정길(경영지원본부)이 삭제되어 isAdmin은 최준표(사업성장본부장)로 이전. */
+     잠깐 참조되는 초기값이라 실제 화면은 로그인 직후 /api/org 실데이터로 즉시 교체됨, 백엔드 미연결 시엔
+     이 배열이 데모 모드의 유일한 데이터가 됨).
+     [2026-07-30] 이 배열에 최준표(id:"park-kyungmin" 중복)·정재우(id:"kwon-gihwan" 중복)가 실제
+     11명 구성원 기준(조직구성원.xlsx, agent-backend 커밋 "Reconfigure org roster...")과 다르게
+     남아있던 것을 발견해 제거함 — 같은 id를 가진 항목이 배열에 둘 있으면 findMember() 등이 항상
+     "첫 번째" 항목(최준표/정재우)만 찾아, 실제로는 박경민/권기환에게 배정된 요청도 데모 모드에서는
+     최준표/정재우로 잘못 표시되는 문제가 있었음(단순히 "인원 2명 초과" 정도가 아니라 조회 정확성 버그).
+     마스터 관리자는 양재훈·김효은 고정(MASTER_ADMIN_IDS 참고, isAdmin 필드와 무관하게 항상 관리자). */
   const ORG=[
     {id:"dept-sgs",dept:"사업성장본부",teams:[
       {id:"team-sales-drive",team:"세일즈추진팀",members:[
-        {id:"park-kyungmin",name:"최준표",rank:"본부장",duty:"세일즈 추진 총괄",kw:["세일즈 추진 전략/운영 총괄","RM 연계 영업·매출 성과 관리"],email:"mod1126@techfinratings.com",amaranthId:"mod1126"},
         {id:"park-kyungmin",name:"박경민",rank:"과장",duty:"세일즈 추진 관리·성과",kw:["영업 추진 대상기업 관리","진행현황·성과 관리","신규고객 확보","세일즈 KPI","세일즈 추진 전략 수립","상품/고객군별 전략","회의체·판매정책 운영","담당 업체 배정","세일즈 프로세스 운영","세일즈전략·판매정책 기획"],email:"kgmi7@techfinratings.com",amaranthId:"kgmi7"},
         {id:"yook-taewoo",name:"육태우",rank:"과장",duty:"세일즈 전략·기획 외 2건",kw:["세일즈 추진 전략 수립","상품/고객군별 전략","회의체·판매정책 운영","담당 업체 배정","세일즈 프로세스 운영","세일즈전략·판매정책 기획","고객솔루션본부 운영지원(서무)","영업 관련 내부 커뮤니케이션","영업 추진 대상기업 관리","진행현황·성과 관리"],email:"ytw618@techfinratings.com",amaranthId:"ytw618"},
       ]},
       {id:"team-biz-strategy",team:"사업전략팀",members:[
-        {id:"kwon-gihwan",name:"정재우",rank:"차장",duty:"사업전략팀 총괄 외 1건",kw:["사업전략·마케팅·고객지원 및 운영정책 관리","유관부서 협업 조율","전체 기획 일정·로드맵","서비스별 진행현황 취합","이슈 체크·보고"],email:"jwjung@techfinratings.com",amaranthId:"jwjung"},
         {id:"kwon-gihwan",name:"권기환",rank:"과장",duty:"사업전략·성장기획 외 3건",kw:["신규사업·서비스 전략","시장/경쟁사 분석","성장방향·KPI","BM·수익모델 검토","서비스 운영정책 수립·관리","프로세스 개선","운영이슈 분석·개선과제","서비스 이용데이터 분석","사업/운영 KPI 리포트","개선방향 도출"],email:"khkwon10@techfinratings.com",amaranthId:"khkwon10"},
         {id:"yoo-byeonggyu",name:"유병규",rank:"과장",duty:"마케팅 전략·운영 외 2건",kw:["마케팅 전략·로드맵","일정·성과·예산 관리","성과분석","브랜드 전략·방향성","온/오프라인 브랜딩","인지도 확대 캠페인","검색/DA 광고","SEO·유입 최적화","광고효율·전환 성과분석","자사채널·SNS"],email:"yoobk@techfinratings.com",amaranthId:"yoobk"},
         {id:"lee-soyoon",name:"이소윤",rank:"대리",duty:"콘텐츠·채널 운영 외 2건",kw:["자사채널·SNS","콘텐츠 기획·제작","바이럴/커뮤니티","발행일정 관리","주주사·제휴사 협업","공동 프로모션·마케팅 협의","외부광고·제휴처 운영","CRM·고객 커뮤니케이션","프로모션·이벤트","고객데이터·행동분석"],email:"2cow895@techfinratings.com",amaranthId:"2cow895"},
