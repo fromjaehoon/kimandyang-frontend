@@ -1567,7 +1567,7 @@
           <h3>뉴스룸 <span class="tag">채널별 · 최신 등록일순</span></h3>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
             <span class="muted" id="newsroomAutoStatus" style="font-size:12px">자동 수집 상태를 확인하는 중...</span>
-            <button class="btn sm" id="newsroomRefreshBtn" type="button" data-admin-only style="margin-left:auto">🔄 지금 새로고침 (구글 뉴스 검색)</button>
+            <button class="btn sm" id="newsroomRefreshBtn" type="button" data-admin-only style="margin-left:auto">🔄 지금 새로고침 (네이버·구글 검색)</button>
           </div>
           <div class="newsroom-grid" id="newsroomList"></div>
         </div>
@@ -6764,7 +6764,7 @@
       else toast(`✓ 뉴스 검색 완료 — ${result.saved}건 반영`);
       await loadNewsroomAuto();
     }catch(e){ toast('⚠ 새로고침 실패: '+(e.message||'')); }
-    finally{ btn.disabled=false; btn.textContent='🔄 지금 새로고침 (구글 뉴스 검색)'; }
+    finally{ btn.disabled=false; btn.textContent='🔄 지금 새로고침 (네이버·구글 검색)'; }
   });
   function renderNewsroomList(){
     const el=document.getElementById('newsroomList');
