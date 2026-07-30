@@ -37,9 +37,11 @@
   .brand-badge .brand-main{font-size:16px;font-weight:800;letter-spacing:2px;color:#fff;line-height:1.2}
   .brand-mark-svg{flex-shrink:0;display:block}
   .gnb-nav{display:flex;align-items:center;gap:2px;flex-shrink:0}
-  .gnb-item{padding:9px 13px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--navy-600);cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;user-select:none}
+  .gnb-item{padding:9px 13px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--navy-600);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;user-select:none}
   .gnb-item:hover{background:rgba(37,99,235,.08);color:var(--blue)}
   .gnb-item.active{background:var(--blue-soft);color:var(--blue)}
+  /* [2026-07-28] GNB 라인 아이콘(Lucide 스타일) — 텍스트 색(currentColor)을 그대로 따라가 단색 통일, 호버/활성 시 함께 파랑으로 */
+  .gnb-ic{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .gnb-caret{font-size:9px;transition:transform .15s ease}
   .gnb-dropdown{position:relative}
   .gnb-dropdown.open .gnb-caret{transform:rotate(180deg)}
@@ -595,6 +597,24 @@
   .newsroom-modal-body .nm-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:10px}
   .newsroom-modal-body .nm-title{font-size:19px;font-weight:800;color:var(--ink);line-height:1.4;margin-bottom:14px}
   .newsroom-modal-body .nm-content{font-size:13.5px;color:var(--ink);line-height:1.85;white-space:pre-wrap}
+  /* [2026-07-29] 전자결재(지식백과) — 샘플 PDF 팝업 + 문서목록/결재라인 패널 */
+  .edoc-modal{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.55);padding:24px}
+  .edoc-modal.show{display:flex}
+  .edoc-modal-box{width:920px;max-width:100%;height:90vh;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(2,8,20,.4);display:flex;flex-direction:column;overflow:hidden}
+  .edoc-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:14.5px;font-weight:800;color:var(--ink);flex:none}
+  .edoc-modal-body{flex:1;min-height:0;background:var(--chip)}
+  /* [2026-07-29] 샘플 문서라 본문 내용을 약하게 흐림(모자이크 느낌) 처리 — 레이아웃·구조는 보이되 세부 내용은 가림 */
+  .edoc-modal-body iframe{width:100%;height:100%;border:0;display:block;filter:blur(1.6px)}
+  .edoc-doc{border:1px solid var(--line);border-radius:10px;padding:12px 13px;cursor:pointer;margin-bottom:8px;background:#fff;transition:.15s}
+  .edoc-doc:hover,.edoc-doc.on{border-color:var(--blue);background:var(--blue-soft)}
+  .edoc-doc .ed-t{font-size:13px;font-weight:800;color:var(--ink);line-height:1.4}
+  .edoc-doc .ed-s{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .edoc-line{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:10px}
+  .edoc-line .el-h{background:var(--chip);font-size:12px;font-weight:800;color:var(--ink);padding:8px 12px;border-bottom:1px solid var(--line)}
+  .edoc-line .el-row{display:flex;font-size:12.5px;border-bottom:1px solid var(--line)}
+  .edoc-line .el-row:last-child{border-bottom:0}
+  .edoc-line .el-k{flex:none;width:76px;background:var(--chip);color:var(--muted);font-weight:700;padding:8px 10px}
+  .edoc-line .el-v{flex:1;padding:8px 10px;color:var(--ink);line-height:1.55}
 
   /* toggle switch */
   .togrow{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:9px}
@@ -752,7 +772,7 @@
         <div class="f-item"><span class="ic">💬</span>의뢰하기</div>
         <div class="f-item"><span class="ic">📄</span>정책·약관</div>
         <div class="f-item"><span class="ic">🗂</span>사례모음</div>
-        <div class="f-item"><span class="ic">❓</span>FAQ</div>
+        <div class="f-item"><span class="ic">❓</span>지식백과</div>
         <div class="f-item"><span class="ic">📤</span>의뢰현황</div>
         <div class="f-item"><span class="ic">🧩</span>AI 정제 설정</div>
         <div class="f-item"><span class="ic">🏢</span>조직관리</div>
@@ -893,20 +913,20 @@
           </div>
         </div>
         -->
-        <div class="gnb-item" data-go="intake"><span class="ic">💬</span> 의뢰하기</div>
-        <div class="gnb-item" data-go="reqlist"><span class="ic">📤</span> 의뢰현황</div>
+        <div class="gnb-item" data-go="intake"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"/><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"/><path d="m2.3 2.3 7.286 7.286"/><circle cx="11" cy="11" r="2"/></svg> 의뢰하기</div>
+        <div class="gnb-item" data-go="reqlist"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> 의뢰현황</div>
         <!-- [2026-07-23] 지식허브 하위 탭 3개(정책·약관/사례모음/FAQ)를 각각 독립된 GNB 대메뉴로 승격 —
              탭으로 숨겨져 있던 것을 메뉴에서 바로 보이도록 해달라는 사용자 요청. -->
-        <div class="gnb-item" data-go="hub-docs"><span class="ic">📄</span> 정책·약관</div>
-        <div class="gnb-item" data-go="hub-cases"><span class="ic">🗂</span> 사례모음</div>
-        <div class="gnb-item" data-go="hub-faq"><span class="ic">❓</span> FAQ</div>
-        <div class="gnb-item" data-go="newsroom"><span class="ic">📰</span> 뉴스룸</div>
+        <div class="gnb-item" data-go="hub-docs"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> 정책·약관</div>
+        <div class="gnb-item" data-go="hub-cases"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg> 사례모음</div>
+        <div class="gnb-item" data-go="hub-faq"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> 지식백과</div>
+        <div class="gnb-item" data-go="newsroom"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg> 뉴스룸</div>
         <!-- [2026-07-23] AI 정제 설정도 설정▾ 드롭다운에서 대메뉴로 승격(사용자 요청)
              [2026-07-27] data-admin-only: 사용자 모드에서는 숨기고 관리자 모드에서만 노출 -->
-        <div class="gnb-item" data-go="template" data-admin-only><span class="ic">🧩</span> AI 정제 설정</div>
+        <div class="gnb-item" data-go="template" data-admin-only><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg> AI 정제 설정</div>
         <!-- [2026-07-16] 사용자 요청으로 설정▾ 메뉴 복구 (외부시스템 연동은 앞서 별도 요청으로 제거했던 항목이라 제외 유지) -->
         <div class="gnb-dropdown" data-dropdown data-admin-only>
-          <div class="gnb-item gnb-trigger">설정 <span class="gnb-caret">▾</span></div>
+          <div class="gnb-item gnb-trigger"><svg class="gnb-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> 설정 <span class="gnb-caret">▾</span></div>
           <div class="gnb-menu">
             <div class="gnb-menu-item" data-go="org"><span class="ic">🏢</span> 조직관리</div>
             <div class="gnb-menu-item" data-go="admin"><span class="ic">🛡</span> 사용/권한관리</div>
@@ -1259,17 +1279,33 @@
 
       <!-- ============ FAQ / 정책·약관 / 사례모음 (2026-07-23: 지식허브 탭 3개를 각각 독립된 GNB 대메뉴로 승격) ============ -->
         <div class="screen" id="hub-faq">
-          <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 자주 묻는 질문과 답변을 카테고리·서비스별로 검색합니다.</div></div>
+          <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 자주 묻는 질문·답변과 <b>전자결재 양식</b>을 카테고리별로 검색합니다. 전자결재는 문서를 선택하면 결재라인 안내와 샘플(PDF)을 확인할 수 있습니다.</div></div>
           <div class="card">
-            <h3>FAQ <span class="tag">중복 제외 · 카테고리화</span></h3>
+            <h3>지식백과 <span class="tag">자주 묻는 질문 · 전자결재 양식</span></h3>
             <div class="field" style="margin-bottom:10px"><input id="faqSearchInput" placeholder="🔍 질문·답변 내용으로 검색"></div>
             <div style="display:flex;gap:8px;margin-bottom:12px">
               <button class="btn pri sm" id="faqSearchBtn">🔍 검색</button>
               <button class="btn sm" id="faqResearchBtn">↻ 다시검색</button>
               <button class="btn sm" id="faqResetBtn">✕ 초기화</button>
             </div>
-            <div class="chips" id="faqCatChips"><span class="chip on" data-cat="전체">전체</span><span class="chip" data-cat="발급/재발급">발급/재발급</span><span class="chip" data-cat="시스템 오류">시스템 오류</span><span class="chip" data-cat="이의/재심">이의/재심</span><span class="chip" data-cat="서류/계약">서류/계약</span><span class="chip" data-cat="결제/정산">결제/정산</span><span class="chip" data-cat="권한/회원">권한/회원</span><span class="chip" data-cat="기업등록">기업등록</span></div>
+            <div class="chips" id="faqCatChips"><span class="chip on" data-cat="전체">전체</span><span class="chip" data-cat="발급/재발급">발급/재발급</span><span class="chip" data-cat="시스템 오류">시스템 오류</span><span class="chip" data-cat="이의/재심">이의/재심</span><span class="chip" data-cat="서류/계약">서류/계약</span><span class="chip" data-cat="결제/정산">결제/정산</span><span class="chip" data-cat="권한/회원">권한/회원</span><span class="chip" data-cat="기업등록">기업등록</span><span class="chip" data-cat="전자결재">전자결재</span></div>
             <div class="chips" id="faqServiceChips" style="margin-top:8px"><span class="chip on" data-service="전체">전체 서비스</span><span class="chip" data-service="매출채권 팩토링">매출채권 팩토링</span><span class="chip" data-service="동반성장 네트워크론">동반성장 네트워크론</span><span class="chip" data-service="크레디뷰">크레디뷰</span><span class="chip" data-service="AI경영진단보고서">AI경영진단보고서</span><span class="chip" data-service="기업모니터링">기업모니터링</span><span class="chip" data-service="DB조회 플랫폼">DB조회 플랫폼</span></div>
+            <!-- [2026-07-29] 전자결재 전용 — 하위 카테고리 칩 + 좌(문서목록)/우(결재라인·샘플) 2단 패널. 전자결재 카테고리 선택 시에만 노출 -->
+            <div class="chips" id="faqEdocSubChips" style="margin-top:8px;display:none">
+              <span class="chip on" data-esub="전체">전체</span>
+              <span class="chip" data-esub="소프트웨어 사용">소프트웨어 사용</span>
+              <span class="chip" data-esub="위하고 방화벽">위하고 방화벽</span>
+              <span class="chip" data-esub="크레디뷰 계정 등록">크레디뷰 계정 등록</span>
+            </div>
+            <div class="row edoc-panel" id="faqEdocPanel" style="display:none;gap:16px;margin-top:12px;align-items:stretch">
+              <div class="card" style="flex:1;min-width:260px;max-width:340px;margin:0">
+                <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:10px">전자결재 문서</div>
+                <div id="edocDocList"></div>
+              </div>
+              <div class="card" style="flex:1.4;min-width:300px;margin:0">
+                <div id="edocDetail"><div class="muted" style="font-size:13px;padding:24px 4px;text-align:center">왼쪽에서 문서를 선택하면 결재라인 안내와 샘플(PDF)을 확인할 수 있습니다.</div></div>
+              </div>
+            </div>
             <div class="acc open" data-cat="발급/재발급"><div class="q" onclick="this.parentElement.classList.toggle('open')"><span>대표자명이 변경됐는데 확인서를 재발급 받으려면?</span><span class="arw">▾</span></div>
               <div class="a">원장상 대표자 정보 정정 후, 요청등록 화면에서 "발급/재발급" 유형으로 접수하시면 <span data-tid="team-solution-plan"></span>에서 재발급 처리합니다. 평균 처리시간 3시간 이내.</div></div>
             <div class="acc" data-cat="시스템 오류"><div class="q" onclick="this.parentElement.classList.toggle('open')"><span>등급 조회 화면이 안 열리는 경우 어디로 문의하나요?</span><span class="arw">▾</span></div>
@@ -1422,6 +1458,14 @@
           </div>
         </div>
 
+        <!-- [2026-07-29] 전자결재 샘플 PDF 레이어 팝업 — PDF 전체를 뷰어로 표시(높이 초과 시 세로 스크롤) -->
+        <div class="edoc-modal" id="edocModal" onclick="if(event.target===this)closeEdocSample()">
+          <div class="edoc-modal-box">
+            <div class="edoc-modal-head"><span id="edocModalTitle">전자결재 샘플</span><button class="btn sm" type="button" onclick="closeEdocSample()">✕ 닫기</button></div>
+            <div class="edoc-modal-body"><iframe id="edocModalFrame" title="전자결재 샘플 문서"></iframe></div>
+          </div>
+        </div>
+
         <div class="screen" id="hub-docs">
           <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 테크핀코리아의 서비스이용약관 및 정책내용을 검색합니다.</div></div>
           <div class="row">
@@ -1513,9 +1557,18 @@
 
       <!-- ============ 뉴스룸 ============ -->
       <section id="newsroom" class="screen">
-        <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 외부 매체·블로그에 소개된 <b>크레디뷰(CREDIVIEW)</b> 관련 보도를 채널별로 모아봅니다. 최신 등록일 순으로 정렬되며, 카드를 클릭하면 전체 기사 내용을 볼 수 있습니다.</div></div>
+        <!-- [2026-07-28] 뉴스룸 히어로 헤드라인 — "미디어가 바라보는 '크레디뷰'는?" 편집형 표제 -->
+        <div style="margin-bottom:14px;padding:14px 22px;border-radius:14px;background:linear-gradient(135deg,#eef2ff 0%,#f5f3ff 55%,#faf5ff 100%);border:1px solid var(--line)">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--blue);margin-bottom:3px">NEWSROOM</div>
+          <div style="font-size:21px;font-weight:800;color:var(--ink);line-height:1.25;letter-spacing:-.01em">미디어가 바라보는 <span style="color:var(--blue)">‘크레디뷰’</span>는?</div>
+        </div>
+        <div class="alert blue" style="margin-bottom:14px"><span>ℹ</span><div>• 외부 매체·블로그에 소개된 <b>크레디뷰(CREDIVIEW)</b> 관련 보도를 채널별로 모아봅니다. 최신 등록일 순으로 정렬되며, 카드를 클릭하면 전체 기사 내용을 볼 수 있습니다. <b>매일 오전 8시</b> 구글 뉴스를 자동 검색해 최신 보도가 추가됩니다.</div></div>
         <div class="card">
           <h3>뉴스룸 <span class="tag">채널별 · 최신 등록일순</span></h3>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <span class="muted" id="newsroomAutoStatus" style="font-size:12px">자동 수집 상태를 확인하는 중...</span>
+            <button class="btn sm" id="newsroomRefreshBtn" type="button" data-admin-only style="margin-left:auto">🔄 지금 새로고침 (구글 뉴스 검색)</button>
+          </div>
           <div class="newsroom-grid" id="newsroomList"></div>
         </div>
       </section>
@@ -1672,7 +1725,7 @@
             <div class="togrow"><div><div class="t">JIRA연동현황</div><div class="s">사내 티켓 현황 조회</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">정책·약관</div><div class="s">서비스운영정책 · 이용약관 검색</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">사례모음</div><div class="s">유사 요청 · 답변 이력</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
-            <div class="togrow"><div><div class="t">FAQ</div><div class="s">자주 묻는 질문</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
+            <div class="togrow"><div><div class="t">지식백과</div><div class="s">자주 묻는 질문</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">통계</div><div class="s">처리율 · 담당자별 · AI정확도</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">AI 정제 설정</div><div class="s">문어체 · 옵션 설정</div></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">조직관리</div><div class="s">조직도 · R&amp;R 설정</div></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
@@ -1704,7 +1757,7 @@
             <h3>설정 <span class="tag">메뉴 활성/비활성 제어</span></h3>
             <div class="togrow"><div><div class="t">정책·약관</div><div class="s">서비스운영정책·이용약관 메뉴 노출</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">사례모음</div><div class="s">유사 요청·답변 이력 메뉴 노출</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
-            <div class="togrow"><div><div class="t">FAQ</div><div class="s">자주 묻는 질문 메뉴 노출</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
+            <div class="togrow"><div><div class="t">지식백과</div><div class="s">자주 묻는 질문 메뉴 노출</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">통계</div><div class="s">처리율·담당자별·AI정확도 메뉴 노출</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
             <div class="togrow"><div><div class="t">JIRA연동현황</div><div class="s">비활성 시 사내 티켓 대신 메일/협업툴 발송만 사용</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="kn"></div></div></div>
           </div>
@@ -1768,14 +1821,31 @@
     return null;
   })();
   let authToken=localStorage.getItem('agentToken')||null;
+  /* [2026-07-28] 데모(오프라인) 모드 — 백엔드(localhost:4000)에 닿지 못하면 true가 되어, 내장
+     목업 데이터로 로그인·조직·AI정제·의뢰현황·기능문의·아마란스발송을 그대로 시연함(해커톤 HTML 단독 제출용).
+     백엔드가 살아있으면 항상 false로 유지되어 실제 API가 사용됨. */
+  let DEMO_MODE=false;
+  /* [2026-07-29] 제출용 단일 HTML 지원 — 빌드 시 window.__ASSETS__ 에 { '경로': 'data:...' } 로 자산을 인라인하면
+     아래 assetUrl()이 그 data URI를 돌려준다(맵이 비어있으면 원래 상대경로 그대로 → 로컬/배포 동작 불변). */
+  window.__ASSETS__ = window.__ASSETS__ || {};
+  function assetUrl(p){ return (window.__ASSETS__ && window.__ASSETS__[p]) || p; }
   /* 백엔드에서 받은 요청 상세를 id로 보관 — openDrawer('req', id)가 REQ_DETAIL(로컬 데모)보다 먼저 조회 */
   const BACKEND_REQUESTS={};
 
   async function apiFetch(path, opts={}){
-    if(!API_BASE){ throw new Error('백엔드 서버 주소가 설정되지 않았습니다. 업로드한 config.js의 KIMYANG_API_BASE 값을 백엔드(예: Render) 주소로 지정하세요.'); }
+    /* 이미 데모 모드이거나 백엔드 주소 자체가 없으면 곧바로 내장 목업으로 응답 */
+    if(DEMO_MODE || !API_BASE){ setDemoMode(true); return mockApi(path, opts); }
     const headers={'Content-Type':'application/json', ...(opts.headers||{})};
     if(authToken) headers.Authorization='Bearer '+authToken;
-    const res=await fetch(API_BASE+path, {...opts, headers});
+    let res;
+    try{
+      res=await fetch(API_BASE+path, {...opts, headers});
+    }catch(netErr){
+      /* fetch 자체가 실패 = 백엔드에 닿지 못함(서버 미실행 등) → 데모 모드로 전환해 목업으로 응답.
+         (HTTP 4xx/5xx는 여기가 아니라 아래 !res.ok에서 처리되므로, 실제 로그인 실패 등은 그대로 노출됨) */
+      setDemoMode(true);
+      return mockApi(path, opts);
+    }
     let data=null;
     try{ data=await res.json(); }catch(e){ /* 204 등 본문 없음 */ }
     if(!res.ok){
@@ -1784,6 +1854,171 @@
       throw err;
     }
     return data;
+  }
+
+  /* ============================================================
+     [2026-07-28] 데모(오프라인) 목업 백엔드
+     해커톤 산출물로 HTML 파일만 단독 실행(백엔드 미연결)할 때, 주요 기능이 내장 예시 데이터로
+     그대로 시연되도록 apiFetch가 쓰는 모든 엔드포인트를 여기서 흉내낸다. 백엔드가 살아있으면
+     이 경로는 전혀 타지 않는다(detectBackend가 시작 시 1회 확인 → DEMO_MODE 결정).
+     AI 정제는 이미 페이지에 있는 로컬 정제 함수(extractRequestSections·applyStyleGuide·compose 계열·
+     suggestAssignee)를 그대로 재사용하므로, 백엔드 없이도 문어체/문장스타일/자동배정이 실제로 동작한다.
+     ============================================================ */
+  let demoSeq=2000;
+  function setDemoMode(on){
+    if(DEMO_MODE===on) return;
+    DEMO_MODE=on;
+    if(!on) return;
+    if(document.getElementById('demoModeBanner')) return;
+    const b=document.createElement('div');
+    b.id='demoModeBanner';
+    b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#1e293b;color:#fff;font-size:12.5px;line-height:1.5;padding:8px 14px;text-align:center;box-shadow:0 -2px 12px rgba(0,0,0,.25)';
+    b.innerHTML='🔹 <b>데모 모드</b> · 백엔드 미연결 — 내장 예시 데이터로 동작 중입니다. &nbsp;로그인: 아마란스 ID <b>khe6512</b>(관리자)·<b>songikim</b>·<b>mate9028</b> 등, 비밀번호는 아무 값이나 입력하면 됩니다.';
+    (document.body||document.documentElement).appendChild(b);
+  }
+  /* 시작 시 백엔드 도달 가능 여부를 1회 확인 — 응답(설령 401)만 오면 백엔드 살아있음, fetch가
+     throw하면 미연결로 판단해 데모 모드로 전환한다. */
+  async function detectBackend(){
+    if(!API_BASE){ setDemoMode(true); return; }
+    try{ await fetch(API_BASE+'/auth/me', {method:'GET'}); }
+    catch(e){ setDemoMode(true); }
+  }
+  function findMemberByAmaranthId(aid){
+    for(const d of ORG) for(const t of d.teams) for(const m of t.members){
+      if(m.amaranthId===aid) return {member:m, dept:d, team:t};
+    }
+    return null;
+  }
+  function mockApi(path, opts={}){
+    const method=(opts.method||'GET').toUpperCase();
+    let body={}; try{ body=opts.body? JSON.parse(opts.body):{}; }catch(e){}
+    const p=path.split('?')[0];
+    if(p==='/auth/login' && method==='POST') return mockLogin(body);
+    if(p==='/auth/me') return mockMe();
+    if(p==='/org') return mockOrg();
+    if(p==='/requests' && method==='GET') return demoSentRequests();
+    if(p==='/requests' && method==='POST') return mockAnalyzeRequest(body);
+    if(p==='/feature-kb/ask') return mockFeatureKb(body);
+    if(p==='/newsroom' && method==='GET') return {articles:[], lastFetchedAt:null};
+    if(p==='/newsroom/refresh') return {fetched:0, saved:0, errors:['데모 모드에서는 실제 뉴스 검색을 지원하지 않습니다(백엔드 필요)']};
+    if(p==='/amaranth/send') return {success:true, statusCode:200, msgId:'DEMO'+(demoSeq++), message:'데모 발송 성공(실제 전송은 아닙니다)'};
+    if(/^\/org\/members\/[^/]+\/handled-tasks$/.test(p)) return [];
+    if(/^\/org\/members\/[^/]+\/keywords$/.test(p) && method==='POST') return {id:'demo-kw-'+(demoSeq++), value:body.value};
+    if(/^\/org\/members\/keywords\/[^/]+$/.test(p) && method==='DELETE') return {};
+    if(/^\/org\/members\/[^/]+$/.test(p) && method==='PATCH') return {};
+    if(/^\/requests\/[^/]+\/notify-amaranth$/.test(p)) return {success:true, msgId:'DEMO'+(demoSeq++)};
+    if(/^\/requests\/[^/]+\/record-amaranth-msg$/.test(p)) return {};
+    if(/^\/requests\/[^/]+$/.test(p) && method==='DELETE') return {};
+    return {};
+  }
+  function mockLogin(body){
+    const f=findMemberByAmaranthId((body.amaranthId||'').trim());
+    if(!f){ const e=new Error('존재하지 않는 아마란스 ID입니다. (데모 계정: khe6512, songikim, mate9028 등 조직관리에 등록된 ID)'); e.status=401; throw e; }
+    localStorage.setItem('agentDemoUser', f.member.id);
+    return {token:'demo-'+f.member.id, user:{id:f.member.id, name:f.member.name, amaranthId:f.member.amaranthId}};
+  }
+  function mockMe(){
+    const id=localStorage.getItem('agentDemoUser')||'kim-hyoeun';
+    const f=findMember(id);
+    if(!f){ const e=new Error('세션이 없습니다'); e.status=401; throw e; }
+    return {id:f.member.id, name:f.member.name, amaranthId:f.member.amaranthId};
+  }
+  function mockOrg(){
+    return ORG.map(d=>({
+      id:d.id, name:d.dept,
+      teams:d.teams.map(t=>({
+        id:t.id, name:t.team,
+        members:t.members.map(m=>({
+          id:m.id, name:m.name, rank:m.rank||'', duty:m.duty||'',
+          keywords:(m.kw||[]).map((v,i)=>({id:(m.id+'-kw'+i), value:v})),
+          email:m.email, phone:m.phone, amaranthId:m.amaranthId,
+          enabled:m.enabled!==false, role:m.isAdmin?'admin':'user',
+        })),
+      })),
+    }));
+  }
+  function demoClassifyType(t){
+    t=t||'';
+    if(/재발급|발급/.test(t)) return '발급/재발급';
+    if(/오류|에러|장애|안\s*되|안돼|무한로딩|먹통/.test(t)) return '시스템 오류';
+    if(/결제|정산|환불|수수료|입금|세금계산서/.test(t)) return '결제/정산';
+    if(/권한|탈퇴|계정|로그인/.test(t)) return '권한/회원';
+    if(/제휴|협업|제안|연동\s*협의/.test(t)) return '제휴/협업';
+    if(/계약|약정|서류|증빙|확인서/.test(t)) return '서류/계약';
+    return '일반 요청';
+  }
+  function mockAnalyzeRequest(body){
+    const raw=(body.rawText||'').trim();
+    const toneProfile=body.toneProfile||'direct';
+    const extracted=extractRequestSections(raw);
+    const styled=applyStyleGuide(extracted.background, extracted.items);
+    const background=styled.background, items=styled.items;
+    const typeText=demoClassifyType(raw);
+    const isUrgent=/(긴급|급하|빨리|시급|당장|즉시|오늘\s*중)/.test(raw);
+    const suggested=suggestAssignee(raw);
+    const me=findMember(CURRENT_USER_ID);
+    const request={
+      id:'DEMO-'+(demoSeq++), title:composeMailSubject(background, items, typeText),
+      receivedAt:new Date().toISOString(), type:typeText, rawText:raw,
+      requesterId:CURRENT_USER_ID, assigneeId:suggested? suggested.member.id : null,
+      status:'배정 완료', urgent:isUrgent,
+    };
+    const analysis={
+      background,
+      itemsJson:JSON.stringify(items),
+      extractedKeywordsJson:JSON.stringify(suggested? suggested.matched : []),
+      greeting:composeGreeting(suggested? suggested.team.team : '담당', suggested? suggested.member : null),
+      senderLine: me? composeSenderLine({dept:me.dept.dept, team:me.team.team, name:me.member.name}) : '',
+      contentParagraph:composeMailContent(background, items, toneProfile),
+      closing:composeClosing(isUrgent),
+      thanks:composeThanks(),
+      mailSubject:composeMailSubject(background, items, typeText),
+      needsCheck:extracted.needsCheck,
+    };
+    const suggestedAssignee=suggested? {id:suggested.member.id, name:suggested.member.name, matchedKeywords:suggested.matched} : null;
+    return {request, analysis, suggestedAssignee};
+  }
+  const DEMO_FEATURE_KB=[
+    {kw:['등급확인서','확인서','발급','재발급'], answer:'신용등급 확인서는 [마이페이지 > 신용등급 확인서 > 발급하기]에서 발급할 수 있습니다. 재발급은 발급 이력에서 [재발급] 버튼으로 진행하며, 발급 오류로 인한 재발급은 수수료가 면제됩니다.', menu:'신용등급 확인서', url:'https://crediview.com/mypage/certificate'},
+    {kw:['등급','산정','기준','평가'], answer:'신용평가 등급은 재무제표와 회계 ERP의 월별 회계데이터를 종합해 산정됩니다. 최신 월별 데이터를 반영하므로 재무제표 기준보다 최신 등급이 제공됩니다.', menu:'신용평가 등급 산정', url:''},
+    {kw:['결제','환불','수수료','정산','취소'], answer:'결제 취소·환불은 결제일로부터 7일 이내 신청 시 전액 환불됩니다. 과오납금은 확인일로부터 3영업일 이내 환불됩니다.', menu:'결제·정산 규정', url:''},
+    {kw:['탈퇴','회원','권한'], answer:'회원 탈퇴는 [마이페이지 > 내 정보 관리 > 탈퇴하기]에서 직접 진행할 수 있으며, 탈퇴 신청은 접수일로부터 3영업일 이내 처리됩니다.', menu:'회원 탈퇴·권한 정책', url:''},
+  ];
+  function mockFeatureKb(body){
+    const q=body.query||'';
+    const hit=DEMO_FEATURE_KB.find(e=>e.kw.some(k=>q.includes(k)));
+    if(hit) return {answered:true, answer:hit.answer, matchedMenu:hit.menu, url:hit.url};
+    return {answered:false, routeToPrimary:'솔루션기획팀 양재훈 차장', routeToBackup:'사업전략팀 김송이 과장'};
+  }
+  /* 발송목록(의뢰현황)에 보여줄 내장 예시 — 모두 아마란스 발송완료(amaranthSendStatus:'완료') 상태.
+     requester/recipient/responder는 전부 ORG에 실제로 존재하는 구성원 id를 사용한다. */
+  function demoSentRequests(){
+    const A=(bg,items)=>({background:bg, itemsJson:JSON.stringify(items||[])});
+    return [
+      {id:'R-2001', title:'[발급/재발급] 신용등급 확인서 재발급 요청', type:'발급/재발급', receivedAt:'2026-07-27T09:15:00', urgent:false,
+       requesterId:'kim-songi', assigneeId:'jo-sohye', recipientIdsJson:JSON.stringify(['jo-sohye']), ccIdsJson:JSON.stringify(['kim-hyoeun']),
+       amaranthSendStatus:'완료', status:'처리 완료', rawText:'대표자 정보 변경으로 기존 확인서 효력이 만료되었습니다. 확인서 재발급을 요청드립니다.',
+       analysis:A('대표자 정보 변경으로 기존 확인서 효력이 만료되었습니다.', ['확인서 재발급을 요청드립니다.']),
+       answer:{content:'대표자 정보 정정 후 확인서를 재발급해 드렸습니다. 마이페이지에서 확인 부탁드립니다.', responderId:'jo-sohye', respondedAt:'2026-07-27T14:20:00'}},
+      {id:'R-2002', title:'[시스템 오류] 기업모니터링 화면 무한로딩', type:'시스템 오류', receivedAt:'2026-07-26T16:40:00', urgent:true,
+       requesterId:'song-yena', assigneeId:'yang-jaehoon', recipientIdsJson:JSON.stringify(['yang-jaehoon']), ccIdsJson:JSON.stringify([]),
+       amaranthSendStatus:'완료', status:'처리 완료', rawText:'기업모니터링 대시보드 진입 시 무한로딩이 발생합니다. 급하게 확인 부탁드립니다.',
+       analysis:A('기업모니터링 대시보드 진입 시 무한로딩이 발생합니다.', ['급하게 확인 부탁드립니다.']),
+       answer:{content:'캐시 초기화 후 정상화되었습니다. 재현 시 로그와 함께 다시 알려주세요.', responderId:'yang-jaehoon', respondedAt:'2026-07-26T18:05:00'}},
+      {id:'R-2003', title:'[결제/정산] 7월 정산 내역 확인 요청', type:'결제/정산', receivedAt:'2026-07-25T11:05:00', urgent:false,
+       requesterId:'lee-soyoon', assigneeId:'kim-songi', recipientIdsJson:JSON.stringify(['kim-songi']), ccIdsJson:JSON.stringify([]),
+       amaranthSendStatus:'완료', status:'배정 완료', rawText:'7월 제휴처 정산 내역 중 일부 금액이 상이하여 확인이 필요합니다.',
+       analysis:A('7월 제휴처 정산 내역 중 일부 금액이 상이합니다.', ['확인이 필요합니다.']), answer:null},
+      {id:'R-2004', title:'[제휴/협업] 제휴사 데이터 연동 협의', type:'제휴/협업', receivedAt:'2026-07-24T13:30:00', urgent:false,
+       requesterId:'yoo-byeonggyu', assigneeId:'song-yena', recipientIdsJson:JSON.stringify(['song-yena']), ccIdsJson:JSON.stringify(['yang-jaehoon']),
+       amaranthSendStatus:'완료', status:'처리 완료', rawText:'신규 제휴사와의 데이터 연동 방식 협의를 위해 담당자 회신 부탁드립니다.',
+       analysis:A('신규 제휴사와의 데이터 연동 방식 협의가 필요합니다.', ['담당자 회신 부탁드립니다.']),
+       answer:{content:'연동 규격서를 공유드렸습니다. 다음 주 협의 일정을 잡겠습니다.', responderId:'song-yena', respondedAt:'2026-07-24T17:10:00'}},
+      {id:'R-2005', title:'[권한/회원] 관리자 페이지 권한 추가 요청', type:'권한/회원', receivedAt:'2026-07-23T10:00:00', urgent:false,
+       requesterId:'jo-sohye', assigneeId:'kim-hyoeun', recipientIdsJson:JSON.stringify(['kim-hyoeun']), ccIdsJson:JSON.stringify([]),
+       amaranthSendStatus:'완료', status:'배정 완료', rawText:'신규 입사자 관리자 페이지 접근 권한 추가가 필요합니다.',
+       analysis:A('신규 입사자 관리자 페이지 접근 권한 추가가 필요합니다.', ['권한 추가를 요청드립니다.']), answer:null},
+    ];
   }
 
   function showLoginError(msg){
@@ -2000,6 +2235,9 @@
      저장된 토큰이 있으면 세션을 이어가고(자동 로그인이 아니라 "로그인 유지"), 없거나 만료되었으면
      로그인 게이트를 보여준다. */
   (async function bootAuth(){
+    /* [2026-07-28] 백엔드 도달 여부를 먼저 확인 — 미연결이면 DEMO_MODE로 전환된다.
+       (여기서 await로 한 번 양보하는 사이 아래쪽 const ORG 등 나머지 top-level 코드가 모두 초기화됨) */
+    await detectBackend();
     if(!authToken){ showLoginGate(); return; }
     try{
       const me=await apiFetch('/auth/me');
@@ -2023,7 +2261,7 @@
     jira:["JIRA연동현황","등록된 사내 티켓 현황"],
     "hub-docs":["정책·약관","서비스운영정책 · 이용약관 · 근거 조항 검색"],
     "hub-cases":["사례모음","유사 요청 · 답변 이력"],
-    "hub-faq":["FAQ","자주 묻는 질문"],
+    "hub-faq":["지식백과","자주 묻는 질문 · 전자결재 결재라인 안내"],
     newsroom:["뉴스룸","외부 매체·블로그의 크레디뷰 관련 보도를 채널별로 모아봅니다"],
     stats:["통계","처리율 · 담당자별 · AI정확도 · 월별현황"],
     template:["AI 정제 설정","문어체 설정 · 발송형식별 스타일 · 옵션 설정"],
@@ -2043,7 +2281,9 @@
     document.getElementById('topSub').textContent=t[1];
     /* 홈 화면은 히어로 문구 자체가 타이틀 역할을 하므로 상단 페이지타이틀 바는 숨김 */
     const pageHead=document.querySelector('.page-head');
-    if(pageHead) pageHead.style.display = (id==='dash') ? 'none' : '';
+    /* 홈(dash)과 뉴스룸은 화면 자체의 히어로 문구가 제목 역할을 하므로 상단 페이지타이틀 바를 숨김
+       (뉴스룸: "미디어가 바라보는 '크레디뷰'는?" 히어로 + 안내문과 제목/부제가 중복되어 제거) */
+    if(pageHead) pageHead.style.display = (id==='dash' || id==='newsroom') ? 'none' : '';
     closeDrawer();
     if(id==='intake' && typeof renderIntakeLivePreview==='function') renderIntakeLivePreview();
     /* 정책·약관 화면 진입 시점에 패널이 처음 보여짐 — 스캔 애니메이션은 패널이 실제로 보이는
@@ -2055,7 +2295,7 @@
     }
     if(id==='answer' && typeof renderAnswerSendChannels==='function') renderAnswerSendChannels();
     if(id==='answer' && typeof renderAnswerReqMail==='function') renderAnswerReqMail();
-    if(id==='newsroom' && typeof renderNewsroomList==='function') renderNewsroomList();
+    if(id==='newsroom' && typeof loadNewsroomAuto==='function') loadNewsroomAuto();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',e=>{
@@ -3071,9 +3311,9 @@
         {id:"kim-seongjun",name:"김성준",rank:"대리",duty:"팀 업무 지원",kw:["고객문의·응대 프로세스","서비스 이용 고객지원","운영이슈 대응","응대정책","VOC 수집·개선","불편사항 모니터링","CX 개선","만족도·피드백 관리","고객 공지·안내","문의이력·통계 관리"],email:"sjkim89@techfinratings.com",amaranthId:"sjkim89"},
       ]},
       {id:"team-solution-plan",team:"솔루션기획팀",members:[
-        {id:"yang-jaehoon",name:"양재훈",rank:"차장",duty:"기업모니터링 서비스(PC) 외 4건",kw:["사용자·관리자(Admin) 화면기획","화면설계서·정책파일","플로우·BM 설계","Admin 기능오류·운영효율화 개선","접근권한 관리","유관부서 정보제공 기능","위하고 팩토링 사용자페이지 개선·프로세스","팩터 정책·약관","위하고 KOSMES 사용자페이지 개선","중진공 요구사항"],email:"mate9028@techfinratings.com",amaranthId:"mate9028"},
+        {id:"yang-jaehoon",name:"양재훈",rank:"차장",duty:"기업모니터링 서비스(PC) 외 4건",kw:["사용자·관리자(Admin) 화면기획","화면설계서·정책파일","플로우·BM 설계","Admin 기능오류·운영효율화 개선","접근권한 관리","유관부서 정보제공 기능","위하고 팩토링 사용자페이지 개선·프로세스","팩터 정책·약관","위하고 KOSMES 사용자페이지 개선","중진공 요구사항"],email:"mate9028@techfinratings.com",amaranthId:"mate9028",isAdmin:true},
         {id:"kim-hyoeun",name:"김효은",rank:"과장",duty:"서비스 정책·약관·문서 외 1건",kw:["운영정책·약관·소개자료 표준안","알림정책(웹/SMS/EM)","파일관리","사용자·관리자(Admin) 화면기획","화면설계서·정책","플로우·BM 설계","외부채널 통한 크레디뷰 연계기획","플로우 기획·협의","담당자 커뮤니케이션","Admin 기능오류·운영효율화 개선"],email:"khe6512@techfinratings.com",amaranthId:"khe6512",isAdmin:true},
-        {id:"jo-sohye",name:"조소혜",rank:"대리",duty:"기업신용평가(PC/MO) 외 2건",kw:["사이트 기능오류·개선안","사용편의성·정책변경 화면기획","퍼블리싱 산출물","콘텐츠 구성·디자인·크레디뷰 연동","제공범위 확대","Figma 등 디자인툴 및 기획소스 관리","사용자·관리자(Admin) 화면기획","화면설계서·정책파일","플로우·BM 설계"],email:"layla07@techfinratings.com",amaranthId:"layla07"},
+        {id:"jo-sohye",name:"조소혜",rank:"대리",duty:"기업신용평가(PC/MO) 외 2건",kw:["확인서","재발급","발급","신용등급","신용평가","사이트 기능오류·개선안","사용편의성·정책변경 화면기획","퍼블리싱 산출물","콘텐츠 구성·디자인·크레디뷰 연동","제공범위 확대","Figma 등 디자인툴 및 기획소스 관리","사용자·관리자(Admin) 화면기획","화면설계서·정책파일","플로우·BM 설계"],email:"layla07@techfinratings.com",amaranthId:"layla07"},
         {id:"song-yena",name:"송예나",rank:"대리",duty:"외부채널연동(신한/더존 등) 외 2건",kw:["외부채널 통한 크레디뷰 연계기획","플로우 기획·협의","담당자 커뮤니케이션","홈페이지 개선·고도화","Admin 연동기능 기획·관리","기획문서 WIKI/JIRA 관리","사내 교육용 가이드 문서 작성·관리","콘텐츠 구성·디자인·크레디뷰 연동","제공범위 확대","사용자·관리자(Admin) 화면기획"],email:"ynsong129@techfinratings.com",amaranthId:"ynsong129"},
       ]},
     ]},
@@ -3082,6 +3322,12 @@
      의미없는 초기값일 뿐이고 doLogin()/bootAuth() 성공 시 실제로 로그인한 사용자 id로 즉시 재할당됨.
      (예전엔 로그인 화면 없이 이 값 자체가 "고정 기본 사용자"였으나, 이제는 그 방식을 쓰지 않음.) */
   let CURRENT_USER_ID="kim-hyoeun";
+  /* [2026-07-29] 마스터 관리자 — 양재훈·김효은 고정. 항상 관리자 권한(끌 수 없음).
+     그 외 구성원은 조직관리 R&R 패널의 "관리자 권한 부여" 토글로 관리자 권한을 부여/회수할 수 있다. */
+  const MASTER_ADMIN_IDS=['yang-jaehoon','kim-hyoeun'];
+  function isMasterAdmin(id){ return MASTER_ADMIN_IDS.includes(id); }
+  function isMemberAdmin(m){ return !!m && (isMasterAdmin(m.id) || !!m.isAdmin); }
+  function currentUserIsAdmin(){ const f=findMember(CURRENT_USER_ID); return !!f && isMemberAdmin(f.member); }
 
   function findDept(did){
     if(did==='__me__'){ const f=findMember(CURRENT_USER_ID); return f? f.dept : null; }
@@ -5265,8 +5511,10 @@
         out+=`<li><div class="node" data-add-member="${t.id}" style="color:var(--blue)"><span class="ic">➕</span><span class="lbl">구성원 추가</span></div></li>`;
         out+='</ul></li>';
       });
+      out+=`<li><div class="node" data-add-team="${d.id}" style="color:var(--blue)"><span class="ic">➕</span><span class="lbl">팀 추가</span></div></li>`;
       out+='</ul></li>';
     });
+    out+=`<li><div class="node" data-add-dept="1" style="color:var(--blue)"><span class="ic">➕</span><span class="lbl">본부(부서) 추가</span></div></li>`;
     out+='</ul></li></ul>';
     tree.innerHTML=out;
     tree.querySelectorAll('.node.person').forEach(n=>{
@@ -5385,9 +5633,47 @@
     });
     input.addEventListener('blur', commit);
   }
+  /* [2026-07-29] 팀 추가 / 본부(부서) 추가 — 구성원 추가와 동일한 인라인 입력 패턴 */
+  let teamIdSeq=0, deptIdSeq=0;
+  function startAddTeam(did){
+    const d=findDept(did);
+    if(!d) return;
+    const node=document.querySelector(`.node[data-add-team="${did}"]`);
+    if(!node) return;
+    node.innerHTML=`<span class="ic">📁</span><input class="editbox" id="newTeamInput" placeholder="팀명 입력 후 Enter">`;
+    const input=node.querySelector('#newTeamInput'); input.focus();
+    let done=false;
+    function commit(){
+      if(done) return; done=true;
+      const val=input.value.trim();
+      if(val){ teamIdSeq++; d.teams.push({id:'team-new-'+teamIdSeq, team:val, members:[]}); renderTree(); renderOrgRefs(); toast('✓ "'+val+'" 팀이 추가되었습니다 — 구성원을 추가해보세요'); }
+      else renderTree();
+    }
+    input.addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); commit(); } if(ev.key==='Escape'){ done=true; renderTree(); } });
+    input.addEventListener('blur', commit);
+  }
+  function startAddDept(){
+    const node=document.querySelector('.node[data-add-dept]');
+    if(!node) return;
+    node.innerHTML=`<span class="ic">🏢</span><input class="editbox" id="newDeptInput" placeholder="본부(부서)명 입력 후 Enter">`;
+    const input=node.querySelector('#newDeptInput'); input.focus();
+    let done=false;
+    function commit(){
+      if(done) return; done=true;
+      const val=input.value.trim();
+      if(val){ deptIdSeq++; ORG.push({id:'dept-new-'+deptIdSeq, dept:val, teams:[]}); renderTree(); renderOrgRefs(); toast('✓ "'+val+'" 본부(부서)가 추가되었습니다 — 팀을 추가해보세요'); }
+      else renderTree();
+    }
+    input.addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); commit(); } if(ev.key==='Escape'){ done=true; renderTree(); } });
+    input.addEventListener('blur', commit);
+  }
   tree.addEventListener('click', e=>{
     const addMemberBtn=e.target.closest('.node[data-add-member]');
     if(addMemberBtn){ e.stopPropagation(); startAddMember(addMemberBtn.dataset.addMember); return; }
+    const addTeamBtn=e.target.closest('.node[data-add-team]');
+    if(addTeamBtn){ e.stopPropagation(); startAddTeam(addTeamBtn.dataset.addTeam); return; }
+    const addDeptBtn=e.target.closest('.node[data-add-dept]');
+    if(addDeptBtn){ e.stopPropagation(); startAddDept(); return; }
     const editBtn=e.target.closest('.edit');
     const delBtn=e.target.closest('.del');
     if(!editBtn && !delBtn) return;
@@ -5439,6 +5725,12 @@
         <div class="field"><label>직무</label><input id="rrDuty" value="${m.duty||''}" placeholder="예: 세일즈 추진 관리·성과"></div>
       </div>
       <div class="field"><label>아마란스ID</label><input id="rrAmaranthId" value="${personAmaranthId(m.id)}" placeholder="예: khe6512"></div>
+      <div class="field"><label>관리자 권한 부여${isMasterAdmin(m.id)?' <span class="badge b-navy" style="margin-left:4px">마스터</span>':''} <span class="muted" style="font-weight:400">— ON이면 R&amp;R·키워드 편집 등 관리자 권한을 부여합니다</span></label>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:2px">
+          <div class="toggle ${isMemberAdmin(m)?'on':''}" id="rrAdminToggle"${isMasterAdmin(m.id)?' style="opacity:.55;pointer-events:none" title="마스터 관리자(양재훈·김효은)는 항상 관리자입니다"':''}><div class="kn"></div></div>
+          <span class="muted" style="font-size:12.5px" id="rrAdminLabel">${isMasterAdmin(m.id)?'🔒 마스터 관리자 — 항상 관리자 권한':(isMemberAdmin(m)?'관리자 권한 ON':'일반 사용자 (OFF)')}</span>
+        </div>
+      </div>
       <div class="field"><label>담당 업무 (R&amp;R 설명)</label><textarea style="min-height:70px">${m.duty||m.rank} 관련 요청을 접수·처리합니다.</textarea></div>
       <div class="field"><label>담당 키워드 <span class="muted">— AI가 요청 내 키워드와 이 목록을 비교해 자동배정합니다</span></label>
         <div class="tags" id="rrKwTags" style="margin-bottom:8px">${tags}</div>
@@ -5472,7 +5764,20 @@
         }catch(e){ toast('⚠ 키워드 삭제 실패: '+(e.message||'')); }
       });
     });
+    /* [2026-07-29] 관리자 권한 부여 토글 — 마스터가 아닌 구성원만 조작 가능. ON이면 m.isAdmin=true */
+    const rrAdminToggle=document.getElementById('rrAdminToggle');
+    if(rrAdminToggle && !isMasterAdmin(m.id)){
+      rrAdminToggle.addEventListener('click', ()=>{
+        m.isAdmin=!m.isAdmin;
+        renderOrgRefs();
+        if(typeof renderUserAdminTable==='function') renderUserAdminTable();
+        renderRR(m);
+        toast(m.isAdmin? ('✓ '+m.name+'님에게 관리자 권한을 부여했습니다') : ('✓ '+m.name+'님의 관리자 권한을 회수했습니다'));
+      });
+    }
     async function submitRRKeyword(){
+      /* 키워드 편집은 관리자 권한 필요 — 마스터(양재훈·김효은) 또는 권한이 부여된 계정만 가능 */
+      if(!currentUserIsAdmin()){ toast('⚠ 관리자 권한이 필요합니다 — 마스터 관리자(양재훈·김효은) 또는 관리자 권한이 부여된 계정으로만 키워드를 편집할 수 있습니다'); return; }
       const kwInput=document.getElementById('rrKwInput');
       const val=(kwInput?.value||'').trim();
       if(!val){ toast('⚠ 추가할 키워드를 입력하세요'); return; }
@@ -5692,11 +5997,109 @@
   /* FAQ — 유형(case-type) 칩 + 서비스 칩 + 검색어를 AND로 결합해 필터링.
      기존 7개 예시는 data-cat만, 신규로 추가된 "크레디뷰 주요 질문 및 답변" 67건은 data-service만 갖고 있어
      서로 다른 축이므로, 해당 축의 데이터가 없는 항목은 그 축의 필터와 무관하게 항상 통과시킴 */
+  /* ===== [2026-07-29] 전자결재(지식백과) — 문서 목록 + 결재라인 안내 + 샘플 PDF 팝업 =====
+     전자결재 카테고리 선택 시 일반 FAQ 아코디언 대신 좌(문서목록)/우(결재라인·샘플) 2단 패널을 노출한다. */
+  const EDOC_DOCS=[
+    { id:'edoc-sw', subcat:'소프트웨어 사용', title:'소프트웨어 라이선스 사용 신청서',
+      docNo:'테크핀레이팅스-사업성장본부-솔루션기획팀-24-00063', dept:'솔루션기획팀', drafter:'차장 양재훈', date:'2024-09-06',
+      desc:'MS Office·한글(한컴오피스) 등 업무용 소프트웨어 라이선스 사용을 신청하는 결재 문서입니다.',
+      lines:[
+        { label:'구매에 따른 결재라인', rows:[['결재','사용자(본인) — 해당 결재에 한하여 본인 결재 포함'],['합의','김성훈D 대리 · 김민지 차장 · 김진태 부장'],['참조문서','프로그램 구매신청서 참조첨부 "필수"']] },
+        { label:'사용자 변경에 따른 결재라인', rows:[['결재','현업부서 최고 조직장까지 — 해당 결재는 본인 결재 제외'],['합의','김민지 차장 · 김진태 부장 · 임기정 전무 · 이강수 사장'],['참조문서','프로그램 구매신청서 참조첨부 "필수"']] },
+      ],
+      pdf:'edoc/sw-license.pdf' },
+    { id:'edoc-fw', subcat:'위하고 방화벽', title:'테크핀 업무망(내부망)에서 위하고 방화벽 정책 신청의 건',
+      docNo:'테크핀레이팅스-사업성장본부-솔루션기획팀-24-00063', dept:'솔루션기획팀', drafter:'차장 양재훈', date:'2024-06-01',
+      desc:'테크핀 업무망(내부망)에서 위하고(WEHAGO) 개발기 서버 접속을 위한 방화벽 정책 신청 결재 문서입니다.',
+      lines:[
+        { label:'결재 라인', rows:[['결재','신청자 — 팀장 — 부서장'],['합의','김남규 차장 — 황재승 부장'],['수신·참조','정보보안Unit · IDC운영부 네트워크Cell']] },
+      ],
+      pdf:'edoc/wehago-firewall.pdf' },
+    { id:'edoc-admin', subcat:'크레디뷰 계정 등록', title:'테크핀레이팅스 - 크레디뷰 ADMIN(관리자페이지) 계정 등록 신청',
+      docNo:'테크핀레이팅스-CB기획팀-26-00069', dept:'CB기획팀', drafter:'인턴사원 명수민', date:'2026-07-14',
+      desc:'크레디뷰 ADMIN(관리자페이지)의 운영담당/일반관리자 계정 등록(추가·변경·삭제)을 신청하는 결재 문서입니다.',
+      lines:[
+        { label:'결재 라인', rows:[['결재','신청자 — 팀장 — 본부장'],['합의','하경오 과장'],['수신·참조','솔루션기획팀']] },
+      ],
+      pdf:'edoc/admin-account.pdf' },
+  ];
+  let currentEdocSub='전체';
+  let selectedEdocId=null;
+  function renderEdocList(){
+    const wrap=document.getElementById('edocDocList');
+    if(!wrap) return;
+    const docs=EDOC_DOCS.filter(d=>currentEdocSub==='전체'||d.subcat===currentEdocSub);
+    if(!docs.length){ wrap.innerHTML='<div class="muted" style="font-size:12.5px;padding:14px 2px">해당 하위 카테고리의 문서가 없습니다.</div>'; return; }
+    wrap.innerHTML=docs.map(d=>`<div class="edoc-doc${d.id===selectedEdocId?' on':''}" data-edoc="${d.id}"><div class="ed-t">${escapeHtml(d.title)}</div><div class="ed-s">${escapeHtml(d.subcat)} · ${escapeHtml(d.docNo)}</div></div>`).join('');
+    wrap.querySelectorAll('[data-edoc]').forEach(el=>el.addEventListener('click',()=>{ selectedEdocId=el.dataset.edoc; renderEdocList(); renderEdocDetail(); }));
+  }
+  function renderEdocDetail(){
+    const box=document.getElementById('edocDetail');
+    if(!box) return;
+    const d=EDOC_DOCS.find(x=>x.id===selectedEdocId);
+    if(!d){ box.innerHTML='<div class="muted" style="font-size:13px;padding:24px 4px;text-align:center">왼쪽에서 문서를 선택하면 결재라인 안내와 샘플(PDF)을 확인할 수 있습니다.</div>'; return; }
+    const linesHtml=d.lines.map(l=>`<div class="edoc-line"><div class="el-h">${escapeHtml(l.label)}</div>${l.rows.map(r=>`<div class="el-row"><div class="el-k">${escapeHtml(r[0])}</div><div class="el-v">${escapeHtml(r[1])}</div></div>`).join('')}</div>`).join('');
+    box.innerHTML=`
+      <h4 style="margin:0 0 6px;font-size:15px;font-weight:800;color:var(--ink);line-height:1.4">${escapeHtml(d.title)}</h4>
+      <div class="muted" style="font-size:12px;line-height:1.7;margin-bottom:12px">${escapeHtml(d.desc)}</div>
+      <div class="kv" style="margin-bottom:6px">
+        <div class="k">품의번호</div><div class="v">${escapeHtml(d.docNo)}</div>
+        <div class="k">기안부서</div><div class="v">${escapeHtml(d.dept)}</div>
+        <div class="k">기안자</div><div class="v">${escapeHtml(d.drafter)}</div>
+        <div class="k">작성일자</div><div class="v">${escapeHtml(d.date)}</div>
+      </div>
+      <div style="font-size:12.5px;font-weight:800;color:var(--ink);margin:14px 0 2px">📋 결재라인 안내</div>
+      ${linesHtml}
+      <div style="margin-top:16px"><button class="btn pri sm" type="button" onclick="openEdocSample('${d.id}')">📄 샘플보기</button></div>`;
+  }
+  function openEdocSample(id){
+    const d=EDOC_DOCS.find(x=>x.id===id);
+    if(!d) return;
+    document.getElementById('edocModalTitle').textContent=d.title+' — 샘플';
+    let src=assetUrl(d.pdf);
+    /* 단일 HTML(인라인 자산)일 때 PDF가 data:URI로 오면, iframe에서 data: PDF가 차단되므로 Blob URL로 변환 */
+    if(typeof src==='string' && src.indexOf('data:application/pdf')===0){
+      try{ const b64=src.split(',')[1]; const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); src=URL.createObjectURL(new Blob([arr],{type:'application/pdf'})); }catch(e){}
+    }
+    document.getElementById('edocModalFrame').src=src;
+    document.getElementById('edocModal').classList.add('show');
+  }
+  function closeEdocSample(){
+    document.getElementById('edocModal').classList.remove('show');
+    document.getElementById('edocModalFrame').src='';
+  }
+  document.querySelectorAll('#faqEdocSubChips .chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      document.querySelectorAll('#faqEdocSubChips .chip').forEach(c=>c.classList.remove('on'));
+      chip.classList.add('on');
+      currentEdocSub=chip.dataset.esub;
+      const sel=EDOC_DOCS.find(x=>x.id===selectedEdocId);
+      if(sel && currentEdocSub!=='전체' && sel.subcat!==currentEdocSub){ selectedEdocId=null; renderEdocDetail(); }
+      renderEdocList();
+    });
+  });
   function applyFaqFilters(){
     const activeCat=document.querySelector('#faqCatChips .chip.on')?.dataset.cat || '전체';
+    const isEdoc = activeCat==='전자결재';
+    const edocPanel=document.getElementById('faqEdocPanel');
+    const edocSub=document.getElementById('faqEdocSubChips');
+    const serviceChips=document.getElementById('faqServiceChips');
+    const emptyMsg=document.getElementById('faqEmptyMsg');
+    const accs=[...document.querySelectorAll('#hub-faq .acc')];
+    if(isEdoc){
+      accs.forEach(acc=>acc.style.display='none');
+      if(serviceChips) serviceChips.style.display='none';
+      if(emptyMsg) emptyMsg.style.display='none';
+      if(edocSub) edocSub.style.display='';
+      if(edocPanel) edocPanel.style.display='';
+      renderEdocList(); renderEdocDetail();
+      return;
+    }
+    if(edocSub) edocSub.style.display='none';
+    if(edocPanel) edocPanel.style.display='none';
+    if(serviceChips) serviceChips.style.display='';
     const activeService=document.querySelector('#faqServiceChips .chip.on')?.dataset.service || '전체';
     const q=(document.getElementById('faqSearchInput')?.value||'').trim().toLowerCase();
-    const accs=[...document.querySelectorAll('#hub-faq .acc')];
     let visibleCount=0;
     accs.forEach(acc=>{
       const matchesCat = activeCat==='전체' || !acc.dataset.cat || acc.dataset.cat===activeCat;
@@ -5706,7 +6109,6 @@
       acc.style.display = show ? '' : 'none';
       if(show) visibleCount++;
     });
-    const emptyMsg=document.getElementById('faqEmptyMsg');
     if(emptyMsg) emptyMsg.style.display = visibleCount ? 'none' : '';
   }
   document.querySelectorAll('#faqCatChips .chip').forEach(chip=>{
@@ -5723,15 +6125,60 @@
       applyFaqFilters();
     });
   });
-  document.getElementById('faqSearchInput')?.addEventListener('input', applyFaqFilters);
+  /* [2026-07-29] 검색어(키워드)를 입력하면 그에 해당하는 카테고리(유형/서비스/전자결재 하위)를 자동 선택하고
+     해당 컨텐츠가 바로 보이도록 함. 매핑에 걸리는 키워드가 없으면 카테고리는 그대로 두고 텍스트 검색만 수행. */
+  const FAQ_KEYWORD_MAP=[
+    /* 전자결재 — 하위 카테고리·특정 문서까지 지정 */
+    { kw:['소프트웨어','라이선스','오피스','office','한글','한컴','ms office'], cat:'전자결재', esub:'소프트웨어 사용', edoc:'edoc-sw' },
+    { kw:['방화벽','위하고','wehago','vpn','포트','내부망','업무망'], cat:'전자결재', esub:'위하고 방화벽', edoc:'edoc-fw' },
+    { kw:['admin','어드민','관리자페이지','계정등록','계정 등록','bms'], cat:'전자결재', esub:'크레디뷰 계정 등록', edoc:'edoc-admin' },
+    { kw:['전자결재','결재','품의','기안'], cat:'전자결재', esub:'전체' },
+    /* 유형(cat) */
+    { kw:['재발급','발급','확인서'], cat:'발급/재발급' },
+    { kw:['오류','에러','안열','안 열','무한로딩','로딩','먹통'], cat:'시스템 오류' },
+    { kw:['이의','재심','재심사'], cat:'이의/재심' },
+    { kw:['계약','약정','서류','계약서'], cat:'서류/계약' },
+    { kw:['결제','정산','환불','수수료','과오납'], cat:'결제/정산' },
+    { kw:['탈퇴','권한','회원','계정'], cat:'권한/회원' },
+    { kw:['기업등록','계열사','기업정보'], cat:'기업등록' },
+    /* 서비스(service) */
+    { kw:['팩토링','매출채권'], service:'매출채권 팩토링' },
+    { kw:['네트워크론','동반성장'], service:'동반성장 네트워크론' },
+    { kw:['경영진단'], service:'AI경영진단보고서' },
+    { kw:['모니터링'], service:'기업모니터링' },
+    { kw:['db조회','디비조회','데이터베이스'], service:'DB조회 플랫폼' },
+    { kw:['크레디뷰','crediview'], service:'크레디뷰' },
+  ];
+  function setChip(sel, attr, val){ document.querySelectorAll(sel+' .chip').forEach(c=>c.classList.toggle('on', c.dataset[attr]===val)); }
+  function faqAutoSelect(){
+    const q=(document.getElementById('faqSearchInput')?.value||'').trim().toLowerCase();
+    if(q){
+      const hit=FAQ_KEYWORD_MAP.find(m=>m.kw.some(k=>q.includes(k.toLowerCase())));
+      if(hit){
+        if(hit.service){
+          setChip('#faqCatChips','cat','전체');
+          setChip('#faqServiceChips','service',hit.service);
+        } else if(hit.cat){
+          setChip('#faqCatChips','cat',hit.cat);
+          setChip('#faqServiceChips','service','전체');
+          if(hit.cat==='전자결재'){
+            if(hit.esub){ currentEdocSub=hit.esub; setChip('#faqEdocSubChips','esub',hit.esub); }
+            if(hit.edoc){ selectedEdocId=hit.edoc; }
+          }
+        }
+      }
+    }
+    applyFaqFilters();
+  }
+  document.getElementById('faqSearchInput')?.addEventListener('input', faqAutoSelect);
   let lastFaqSearchTerm='';
   document.getElementById('faqSearchBtn')?.addEventListener('click', ()=>{
     lastFaqSearchTerm=document.getElementById('faqSearchInput').value;
-    applyFaqFilters();
+    faqAutoSelect();
   });
   document.getElementById('faqResearchBtn')?.addEventListener('click', ()=>{
     document.getElementById('faqSearchInput').value=lastFaqSearchTerm;
-    applyFaqFilters();
+    faqAutoSelect();
   });
   document.getElementById('faqResetBtn')?.addEventListener('click', ()=>{
     document.getElementById('faqSearchInput').value='';
@@ -5805,11 +6252,41 @@
       resultHtml:'<b>결제·정산 규정 제3조</b>에 의하면 "결제 취소는 결제일로부터 7일 이내 신청 시 전액 환불한다"고 명시되어 있습니다.',
       service:'금융중개', docFile:'결제·정산 규정.pdf', clause:'제3조',
     },
+    {
+      keywords:['탈퇴','권한 회수','재가입'],
+      docName:'회원 탈퇴·권한 정책',
+      lines:[
+        '제1조(목적) 이 정책은 회원의 탈퇴 및 서비스 이용 권한 회수에 관한 절차와 기준을 정함을 목적으로 한다.',
+        '제2조(탈퇴 신청) 회원은 마이페이지 또는 담당자 요청을 통해 언제든지 탈퇴를 신청할 수 있다.',
+        '제3조(탈퇴 처리 기한) 탈퇴 신청은 접수일로부터 3영업일 이내 처리한다.',
+        '제4조(권한 회수) 탈퇴 처리 시 회원에게 부여된 모든 서비스 이용 권한은 즉시 회수된다.',
+        '제5조(데이터 처리) 탈퇴 후 회원의 개인정보는 개인정보 처리방침에 따라 파기한다.',
+        '제6조(재가입 제한) 탈퇴한 회원은 탈퇴일로부터 30일간 재가입이 제한될 수 있다.',
+      ],
+      hitLineIdx:2, hitText:'탈퇴 신청은 접수일로부터 3영업일 이내 처리한다',
+      resultHtml:'<b>회원 탈퇴·권한 정책 제3조</b>에 의하면 "탈퇴 신청은 접수일로부터 3영업일 이내 처리한다"고 명시되어 있습니다.',
+      service:'기업DB', docFile:'회원 탈퇴·권한 정책.docx', clause:'제3조',
+    },
   ];
   function findPolicyMatch(query){
     const q=(query||'').trim();
     if(!q) return null;
-    return POLICY_SEARCH_DB.find(entry=>entry.keywords.some(k=>q.includes(k))) || null;
+    /* 1) 등록된 키워드 매칭 우선 */
+    const byKeyword=POLICY_SEARCH_DB.find(entry=>entry.keywords.some(k=>q.includes(k)));
+    if(byKeyword) return byKeyword;
+    /* 2) 폴백: 키워드에 없어도 조항 본문에 검색어가 실제로 포함돼 있으면 그 조항을 근거로 반환
+          (왼쪽 문서 목록과 검색 DB가 별개라 놓치던 케이스를 보완) */
+    for(const entry of POLICY_SEARCH_DB){
+      const idx=entry.lines.findIndex(line=>line.includes(q));
+      if(idx>=0){
+        const lineText=entry.lines[idx];
+        const cm=lineText.match(/^제\d+조(?:\([^)]*\))?/);
+        const clause=cm?cm[0]:(entry.clause||'');
+        return {...entry, hitLineIdx:idx, hitText:q, clause,
+          resultHtml:`<b>${entry.docName} ${clause}</b>에서 "${escapeHtml(q)}" 관련 내용을 확인했습니다: "${escapeHtml(lineText)}"`};
+      }
+    }
+    return null;
   }
   function highlightHit(line, hitText){
     const idx=line.indexOf(hitText);
@@ -6019,8 +6496,8 @@
   function newsroomThumbDataUri(a){
     /* [2026-07-27] 실제 이미지 파일 우선 — 기사에 img(경로/URL/데이터URI)가 지정돼 있으면 그대로 사용.
        (첨부처럼 3D 렌더 이미지를 파일로 넣으면 각 기사 a.img에 지정만 하면 바로 반영됨) */
-    if(a.img) return a.img;
-    var c=a.color, cLight=darkenHex(c,1.25), c2=darkenHex(c,.5);
+    if(a.img) return assetUrl(a.img);
+    var c=a.color || '#64748b', cLight=darkenHex(c,1.25), c2=darkenHex(c,.5);
     var glyph=newsroomGlyph(a.category);
     var esc=function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
     var svg=
@@ -6149,79 +6626,156 @@
       content:'테크핀레이팅스가 신년 사업계획을 발표하고, 크레디뷰의 핵심 서비스 전반을 고도화하겠다는 방침을 밝혔다.\n\n구체적으로는 AI 경영진단보고서의 진단 항목 확대, 기업모니터링의 조기경보 알림 세분화, 기업DB조회의 검색 속도 개선이 주요 과제로 제시됐다.\n\n회사 관계자는 "매출채권 팩토링, 동반성장 네트워크론 등 금융 연계 서비스도 함께 확대해 데이터가 실제 자금 조달로 이어지는 흐름을 강화하겠다"고 밝혔다.'
     },
   ];
-  /* [2026-07-27] 뉴스룸 기사를 실제 '크레디뷰' 관련 언론 보도로 교체 — 위 예시 데이터는 폐기하고, 구글/
-     네이버 뉴스에 실제로 노출된 기사들의 헤드라인·출처·날짜를 기준으로 정리함. 본문(content)은 원문을
-     복제하지 않고 공개된 사실만 간결히 요약했으며, 각 기사 원문 URL로 직접 연결함(newsroomArticleUrl). */
-  var CV_LAUNCH='더존비즈온의 핀테크 전문 계열사 테크핀레이팅스가 AI 기반 기업신용평가플랫폼 ‘크레디뷰(Crediview)’를 선보였다.\n\n크레디뷰는 회원가입 후 인증서만 등록하면 별도의 서류 제출 없이 기업신용평가등급을 실시간으로 조회·산출할 수 있는 것이 특징이다. 기업신용평가와 함께 AI 경영진단, 기업 모니터링 등의 서비스도 함께 제공한다.\n\n회사는 중소기업과 개인사업자·소상공인의 금융 접근성을 높이는 데 초점을 맞추고 있다고 밝혔다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
-  var CV_BID='테크핀레이팅스가 기업신용평가플랫폼 ‘크레디뷰’에 조달청 나라장터 실시간 연계 기능을 더해, 기업의 공공입찰 준비 과정을 대폭 단축했다.\n\n크레디뷰에서 회원가입과 인증서 등록만 하면 약 30분 이내에 신용평가등급이 산출되며, 등급 조회부터 확인서 신청·발급, 조달청 제출까지 원스톱으로 처리할 수 있다.\n\n회사는 기존 며칠씩 걸리던 절차를 없애 업계 최저 수준의 비용으로 법인·개인사업자의 공공조달시장 참여를 넓히겠다고 밝혔다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
-  var CV_FACT='테크핀레이팅스가 중소기업이 보유한 매출채권을 비대면으로 빠르게 현금화할 수 있도록 지원하는 서비스를 준비하고 있다고 밝혔다.\n\n국내 기업금융 특화 신용평가(CB) 플랫폼 사업자로서 팩토링 신청부터 실행까지 전 과정을 비대면으로 처리할 수 있는 기업정보조회 기반을 마련한다는 계획이다.\n\n※ 원문 전문은 아래 [출처 페이지로 바로가기]에서 확인하실 수 있습니다.';
+  /* [2026-07-29] 뉴스룸 기사 본문을 매체별로 서로 다른 내용으로 전면 개편 — 기존엔 같은 보도 묶음(공공조달
+     5건/서비스출시 9건)이 전부 동일한 CV_BID/CV_LAUNCH 문구를 재사용해, 어떤 카드를 눌러도 본문이 똑같았음.
+     WebFetch로 각 기사 원문 URL을 실제로 열람해 매체별 고유 사실(예: 비바100·서울경제·ZDNet의 "디저트 쿠폰
+     이벤트", 디지털투데이의 "옥형석 대표" 발언 등)을 확인한 뒤, 원문을 그대로 복제하지 않고(저작권상 금지)
+     확인된 사실만 매체별로 다르게 재구성한 요약문으로 새로 작성함. 이 과정에서 N-15(택스워치 2024-07-22)의
+     기존 content(CV_FACT)가 실제 원문(신한은행·SGI서울보증과의 공급망금융 업무협약 체결 보도)과 다른
+     내용이었던 것도 함께 바로잡음(제목·요약·카테고리 모두 실제 보도에 맞게 수정). */
   NEWSROOM_ARTICLES.length=0;
   NEWSROOM_ARTICLES.push(
     { id:'N-01', source:'한국세정신문', category:'공공조달', date:'2025-05-13', color:'#2563eb',
       title:'더존 테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 준비 하루만에 끝낸다',
-      summary:'크레디뷰가 조달청 나라장터와 실시간 연계돼, 기업이 공공입찰에 필요한 신용평가등급 조회부터 확인서 발급까지 하루 만에 마칠 수 있게 됐다.', content:CV_BID },
+      summary:'크레디뷰가 조달청 나라장터와 실시간 연계돼, 기업이 공공입찰에 필요한 신용평가등급 조회부터 확인서 발급까지 하루 만에 마칠 수 있게 됐다.',
+      content:'더존비즈온의 핀테크 계열사 테크핀레이팅스가 기업신용평가플랫폼 ‘크레디뷰’에 조달청 나라장터 실시간 연계 기능을 추가했다고 보도했다.\n\n세정 전문지 특성에 맞춰, 이번 개편으로 공공입찰에 필요한 신용평가등급 확인서 발급 절차가 대폭 간소화되어 기업의 행정 부담과 비용이 줄어드는 점에 주목했다.\n\n회원가입과 인증서 등록만으로 짧은 시간 내 등급 산출이 가능해, 영세 법인·개인사업자의 조달시장 진입 문턱을 낮추는 효과가 기대된다고 전했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.' },
     { id:'N-02', source:'전자신문', category:'공공조달', date:'2025-05-13', color:'#0e7490',
       title:'테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 “하루면 완결”',
-      summary:'조달청 나라장터 연계로 등급 산출부터 확인서 제출까지 원스톱 처리가 가능해져 공공입찰 준비 기간이 크게 줄었다.', content:CV_BID, url:'https://www.etnews.com/20250513000102' },
+      summary:'조달청 나라장터 연계로 등급 산출부터 확인서 제출까지 원스톱 처리가 가능해져 공공입찰 준비 기간이 크게 줄었다.',
+      content:'전자신문은 테크핀레이팅스의 기업신용평가플랫폼 ‘크레디뷰’가 조달청 나라장터와 실시간 연계 시스템을 구축했다고 전했다.\n\n보도에 따르면 신용등급 조회부터 확인서 발급·제출까지 하나의 화면에서 처리할 수 있게 됐으며, 기존에 수일씩 걸리던 준비 기간이 하루로 단축됐다.\n\n회원가입 후 인증서 등록만으로 30분 이내에 신용등급이 산출되는 자동화 구조가 이번 개편의 핵심 기술로 소개됐다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.etnews.com/20250513000102' },
     { id:'N-03', source:'파이낸셜뉴스', category:'공공조달', date:'2025-05-13', color:'#9333ea',
       title:'더존 테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 준비 ‘하루면 완결’',
-      summary:'회원가입과 인증서 등록만으로 30분 이내에 신용평가등급을 산출해 공공조달시장 진입을 지원한다.', content:CV_BID, url:'https://www.fnnews.com/news/202505131006419269' },
+      summary:'회원가입과 인증서 등록만으로 30분 이내에 신용평가등급을 산출해 공공조달시장 진입을 지원한다.',
+      content:'파이낸셜뉴스는 크레디뷰의 조달청 연계 기능이 공공조달시장에 미칠 비용 절감 효과에 초점을 맞춰 보도했다.\n\n회원가입과 인증서 등록만으로 30분 이내 신용평가등급을 산출할 수 있어, 별도 심사 비용이나 서류 준비에 드는 시간과 비용 부담이 크게 줄어든다는 점을 강조했다.\n\n이를 통해 자금 여력이 부족한 중소 법인과 개인사업자도 공공조달시장에 보다 쉽게 진입할 수 있을 것으로 내다봤다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.fnnews.com/news/202505131006419269' },
     { id:'N-04', source:'디지털투데이', category:'공공조달', date:'2025-05-13', color:'#16a34a',
       title:'테크핀레이팅스, ‘크레디뷰’로 기업 공공입찰 시장 공략 가속',
-      summary:'업계 최저 수준의 비용과 나라장터 실시간 연계를 앞세워 법인·개인사업자의 공공조달시장 참여 확대를 유도한다.', content:CV_BID, url:'https://www.digitaltoday.co.kr/news/articleView.html?idxno=565856' },
+      summary:'업계 최저 수준의 비용과 나라장터 실시간 연계를 앞세워 법인·개인사업자의 공공조달시장 참여 확대를 유도한다.',
+      content:'디지털투데이는 테크핀레이팅스 옥형석 대표의 발언을 인용해, 크레디뷰의 조달청 연계 서비스가 기업신용평가의 정확성과 국가 조달시장 활성화를 동시에 달성하는 핵심 인프라를 지향한다고 전했다.\n\n기업의 재무정보·경영지표·업종 특성을 반영한 AI 기반 맞춤형 신용등급을 실시간으로 제공하는 것이 특징이라고 소개했다.\n\n업계 최저 수준의 비용으로 법인·개인사업자의 공공조달시장 참여 확대를 유도하겠다는 회사 방침도 함께 다뤘다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.digitaltoday.co.kr/news/articleView.html?idxno=565856' },
     { id:'N-05', source:'강원일보', category:'공공조달', date:'2025-05-13', color:'#d97706',
       title:'더존 테크핀레이팅스 ‘크레디뷰’로 기업 공공입찰 준비 하루만에',
-      summary:'별도 서류 제출 없이 등급 조회·확인서 발급·조달청 제출을 한 번에 처리해 준비 기간을 하루로 단축했다.', content:CV_BID, url:'https://m.kwnews.co.kr/page/view/2025051310104039194' },
+      summary:'별도 서류 제출 없이 등급 조회·확인서 발급·조달청 제출을 한 번에 처리해 준비 기간을 하루로 단축했다.',
+      content:'강원일보는 지난달 출시된 크레디뷰가 조달청 나라장터와 실시간 연계되면서 공공입찰 준비 기간이 크게 단축됐다고 보도했다.\n\n신용등급 조회부터 확인서 신청·발급, 조달청 제출까지 원스톱으로 처리할 수 있어, 기존 수일이 걸리던 절차가 회원가입과 인증서 등록만으로 30분 이내에 끝난다고 전했다.\n\n업계 최저 수준의 비용 구조와 AI 기반 실시간 맞춤형 등급 산출이 공공조달시장 진입 문턱을 낮추는 데 기여할 것으로 평가했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://m.kwnews.co.kr/page/view/2025051310104039194' },
     { id:'N-06', source:'브릿지경제(비바100)', category:'서비스 출시', date:'2025-04-08', color:'#0891b2',
       title:'테크핀레이팅스, AI 기반 기업신용평가플랫폼 ‘크레디뷰’ 출시',
-      summary:'AI 기술로 기업별 맞춤형 신용등급을 실시간 산출하는 크레디뷰가 정식 출시됐다.', content:CV_LAUNCH, url:'https://www.viva100.com/article/20250408501005' },
+      summary:'AI 기술로 기업별 맞춤형 신용등급을 실시간 산출하는 크레디뷰가 정식 출시됐다.',
+      content:'브릿지경제(비바100)는 테크핀레이팅스의 AI 기업신용평가플랫폼 ‘크레디뷰’ 출시 소식과 함께, 재무데이터·경영정보를 분석하는 AI 신용평가모형과 조달청 나라장터 실시간 연계 시스템을 소개했다.\n\n신용평가등급 발급에 걸리던 수일의 시간과 수십만 원의 비용을 대폭 줄였다는 점을 부각했다.\n\n특히 6월 30일까지 무료 등급조회를 완료한 신규 고객에게 디저트 쿠폰을 증정하는 출시 이벤트도 함께 안내했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.viva100.com/article/20250408501005' },
     { id:'N-07', source:'딜사이트', category:'서비스 출시', date:'2025-04-07', color:'#2563eb',
       title:'테크핀레이팅스, AI 신용평가플랫폼 ‘크레디뷰’ 출시',
-      summary:'더존비즈온의 핀테크 계열사 테크핀레이팅스가 AI 신용평가플랫폼 크레디뷰를 출시하고 기업신용등급 조회 서비스를 시작했다.', content:CV_LAUNCH, url:'https://dealsite.co.kr/articles/139483/089060' },
+      summary:'더존비즈온의 핀테크 계열사 테크핀레이팅스가 AI 신용평가플랫폼 크레디뷰를 출시하고 기업신용등급 조회 서비스를 시작했다.',
+      content:'딜사이트는 테크핀레이팅스가 업계 최초로 기업신용평가등급 무료 조회 서비스를 제공하는 ‘크레디뷰’를 출시했다고 전했다.\n\n조달청 나라장터와 실시간 연계돼 산출된 등급이 즉시 자동으로 전송되는 구조를 갖췄으며, 별도 서류 제출 없이 신용등급 조회부터 확인서 발급까지 원스톱으로 처리할 수 있다고 소개했다.\n\n중소기업과 소상공인의 공공조달시장 진입장벽을 낮추고 시장 경쟁을 활성화하려는 목적이 있다고 덧붙였다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://dealsite.co.kr/articles/139483/089060' },
     { id:'N-08', source:'전자신문', category:'서비스 출시', date:'2025-04-07', color:'#7c3aed',
       title:'더존 테크핀레이팅스, AI로 신용평가 제공 ‘크레디뷰’ 출시',
-      summary:'인증서 등록만으로 서류 제출 없이 즉시 기업신용평가를 받을 수 있는 AI 플랫폼을 선보였다.', content:CV_LAUNCH, url:'https://v.daum.net/v/20250407092902702' },
+      summary:'인증서 등록만으로 서류 제출 없이 즉시 기업신용평가를 받을 수 있는 AI 플랫폼을 선보였다.',
+      content:'전자신문은 더존비즈온의 핀테크 계열사 테크핀레이팅스가 AI 신용평가플랫폼 ‘크레디뷰’를 정식 출시했다고 보도했다.\n\n회원가입 후 인증서 등록만으로 별도 서류 제출 없이 즉시 기업신용평가를 받을 수 있는 자동화 시스템을 이번 출시의 핵심으로 소개했다.\n\n기업신용평가와 함께 AI 경영진단, 기업모니터링 등 연계 서비스도 순차적으로 제공될 예정이라고 전했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://v.daum.net/v/20250407092902702' },
     { id:'N-09', source:'서울경제', category:'서비스 출시', date:'2025-04-07', color:'#be123c',
       title:'더존 테크핀레이팅스, 기업신용평가 플랫폼 ‘크레디뷰’ 공개',
-      summary:'더존의 데이터 역량과 AI 기술을 바탕으로 기업신용평가·경영진단·모니터링 서비스를 제공한다.', content:CV_LAUNCH, url:'https://www.sedaily.com/NewsView/2GRFGYSZFP' },
+      summary:'더존의 데이터 역량과 AI 기술을 바탕으로 기업신용평가·경영진단·모니터링 서비스를 제공한다.',
+      content:'서울경제는 크레디뷰가 기업의 재무데이터와 경영정보를 분석하는 AI 신용평가모형을 갖췄다고 소개하며, 더존의 데이터 역량과 AI 기술을 결합한 서비스라는 점을 강조했다.\n\n조달청 나라장터와 실시간 연계돼 별도 서류 없이 신용평가등급 확인서를 신청·발급받을 수 있다고 전했다.\n\n6월 30일까지 무료 등급조회를 완료한 신규 고객에게 디저트 쿠폰을 증정하는 프로모션 소식도 함께 실렸다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.sedaily.com/NewsView/2GRFGYSZFP' },
     { id:'N-10', source:'한국경제', category:'서비스 출시', date:'2025-04-07', color:'#16a34a',
       title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
-      summary:'별도 서류나 복잡한 절차 없이 기업신용평가등급 조회부터 확인서 발급까지 원스톱으로 처리한다.', content:CV_LAUNCH, url:'https://www.hankyung.com/article/202504074296P' },
+      summary:'별도 서류나 복잡한 절차 없이 기업신용평가등급 조회부터 확인서 발급까지 원스톱으로 처리한다.',
+      content:'한국경제는 크레디뷰가 업계 최초로 기업신용평가등급 무료 조회 서비스를 제공하며, 조달청 나라장터와 실시간 연계 시스템을 구현했다고 보도했다.\n\n신용평가등급확인서를 기존처럼 수일이 아니라 즉시 발급받을 수 있고, 수십만 원대였던 발급 비용도 대폭 절감된다고 전했다.\n\n중소기업과 소상공인의 공공입찰 참여 절차를 간소화하는 것이 이번 서비스의 목표라고 덧붙였다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.hankyung.com/article/202504074296P' },
     { id:'N-11', source:'ZDNet Korea', category:'서비스 출시', date:'2025-04-07', color:'#9333ea',
       title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
-      summary:'중소기업과 소상공인의 금융 접근성 제고를 목표로 실시간 기업신용평가 서비스를 공개했다.', content:CV_LAUNCH, url:'https://zdnet.co.kr/view/?no=20250407180121' },
+      summary:'중소기업과 소상공인의 금융 접근성 제고를 목표로 실시간 기업신용평가 서비스를 공개했다.',
+      content:'ZDNet Korea는 크레디뷰가 중소기업과 소상공인에게 무료 신용등급 조회 서비스를 제공하며, AI 기술을 통해 실시간으로 등급을 산출한다고 전했다.\n\n조달청 나라장터와 실시간 연계돼 별도 서류 제출 없이 온라인으로 신용평가등급 확인서를 신청·발급받을 수 있는 구조를 기술적으로 소개했다.\n\n6월 30일까지 무료등급조회를 완료한 신규 고객 대상 디저트 쿠폰 증정 이벤트도 함께 안내했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://zdnet.co.kr/view/?no=20250407180121' },
     { id:'N-12', source:'아이티데일리', category:'서비스 출시', date:'2025-04-07', color:'#0e7490',
       title:'더존 테크핀레이팅스, 기업신용평가플랫폼 ‘크레디뷰’ 공개',
-      summary:'조달청 나라장터 연계 등 실시간 자동 전송 시스템을 갖춘 기업신용평가플랫폼을 공개했다.', content:CV_LAUNCH },
+      summary:'조달청 나라장터 연계 등 실시간 자동 전송 시스템을 갖춘 기업신용평가플랫폼을 공개했다.',
+      content:'아이티데일리는 크레디뷰의 조달청 나라장터 실시간 자동 전송 시스템에 주목해, IT 인프라 관점에서 이번 플랫폼 공개 소식을 다뤘다.\n\n회원가입과 인증서 등록만으로 신용평가등급을 실시간 산출·전송하는 백엔드 연동 구조가 이번 서비스의 기술적 특징으로 소개됐다.\n\n기업신용평가 외에 AI 경영진단, 기업모니터링 등 관련 서비스로의 확장 가능성도 함께 언급됐다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 자세한 내용은 관련 뉴스 검색을 통해 확인하실 수 있습니다.' },
     { id:'N-13', source:'데이터넷', category:'서비스 출시', date:'2025-04-07', color:'#2563eb',
       title:'테크핀레이팅스, AI 기반 기업신용평가플랫폼 ‘크레디뷰’ 출시',
-      summary:'AI 기술과 신뢰도 높은 데이터를 바탕으로 기업별 맞춤형 신용등급을 실시간 산출한다.', content:CV_LAUNCH, url:'https://www.datanet.co.kr/news/articleView.html?idxno=201075' },
+      summary:'AI 기술과 신뢰도 높은 데이터를 바탕으로 기업별 맞춤형 신용등급을 실시간 산출한다.',
+      content:'데이터넷은 크레디뷰가 신뢰도 높은 데이터와 AI 기술을 결합해 기업별 맞춤형 신용등급을 실시간으로 산출한다고 소개했다.\n\n조달청 나라장터와의 실시간 연계를 통해 등급 정보가 자동으로 전송되는 데이터 처리 구조에 초점을 맞춰 보도했다.\n\n회원가입과 인증서 등록만으로 서비스를 이용할 수 있어 데이터 신뢰성과 접근성을 동시에 확보했다는 평가를 전했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.datanet.co.kr/news/articleView.html?idxno=201075' },
     { id:'N-14', source:'택스워치', category:'서비스 출시', date:'2025-04-07', color:'#d97706',
       title:'더존비즈온 테크핀레이팅스, AI 기업신용평가플랫폼 ‘크레디뷰’ 출시',
-      summary:'무료 기업신용등급 조회 서비스와 함께 크레디뷰가 정식 출시됐다.', content:CV_LAUNCH, url:'https://www.taxwatch.co.kr/article/tax/2025/04/07/0003' },
-    { id:'N-15', source:'택스워치', category:'금융서비스', date:'2024-07-22', color:'#be123c',
-      title:'더존 테크핀레이팅스, 중기 ‘매출채권 비대면 현금화’ 지원',
-      summary:'국내 기업금융 특화 CB 플랫폼 사업자로서 매출채권 팩토링 신청부터 실행까지 비대면 처리를 지원한다.', content:CV_FACT, url:'https://www.taxwatch.co.kr/article/tax/2024/07/22/0001' }
+      summary:'무료 기업신용등급 조회 서비스와 함께 크레디뷰가 정식 출시됐다.',
+      content:'택스워치는 크레디뷰가 업계 최초로 기업신용등급 무료 조회 서비스를 제공하며 정식 출시됐다고 보도했다.\n\n조달청 나라장터와 실시간 연계 시스템을 통해 신용평가등급확인서를 즉시 발급받을 수 있어, 기존 수십만 원대였던 발급 비용을 대폭 절감할 수 있다고 전했다.\n\n중소기업과 소상공인의 공공입찰 참여 절차를 간소화하는 것이 서비스의 핵심 목표라고 소개했다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.taxwatch.co.kr/article/tax/2025/04/07/0003' },
+    /* [2026-07-29] 사실관계 수정 — 기존엔 "매출채권 비대면 현금화 서비스 준비"로만 요약돼 있었으나,
+       실제 원문(WebFetch로 확인)은 신한은행·SGI서울보증과의 공급망금융 업무협약 체결 보도였음. 제목·요약·
+       카테고리를 실제 보도 내용에 맞게 정정함. */
+    { id:'N-15', source:'택스워치', category:'파트너십', date:'2024-07-22', color:'#be123c',
+      title:'더존 테크핀레이팅스, 신한은행·SGI서울보증과 공급망금융 업무협약',
+      summary:'테크핀레이팅스가 신한은행, SGI서울보증과 손잡고 중소기업 매출채권을 비대면으로 현금화하는 공급망금융 지원에 나선다.',
+      content:'택스워치는 더존비즈온의 핀테크 계열사 테크핀레이팅스가 신한은행, SGI서울보증과 중소기업 공급망금융 지원을 위한 업무협약을 체결했다고 보도했다.\n\n이번 협약으로 매출채권팩토링 신청부터 실행까지 전 과정을 비대면으로 처리할 수 있는 기업정보조회 플랫폼을 공동 개발할 계획이라고 전했다.\n\n테크핀레이팅스는 기업신용평가, SGI서울보증은 상업신용보험, 신한은행은 ‘디지털 신용보증 팩토링’ 상품을 각각 맡아 신용도 기반으로 심사 절차를 간소화하고 팩토링 금리를 낮추는 효과를 기대한다고 설명했다.\n\n더존의 기업 데이터·AI 기술과 대형 은행의 금융 노하우가 결합해 중소기업의 자금 조달을 지원하는 사례로 소개됐다.\n\n※ 이 내용은 실제 보도를 바탕으로 요약한 것이며, 전체 기사 원문은 아래 링크에서 확인할 수 있습니다.', url:'https://www.taxwatch.co.kr/article/tax/2024/07/22/0001' }
   );
   /* [2026-07-27] 사용자가 제공한 3D 렌더 참고 이미지(etc_image/Gemini_..._5munpj)에서 잘라낸 썸네일 6장을
      기사에 반복 배정. img가 지정된 기사는 SVG 대신 이 이미지가 우선 노출됨(newsroomThumbDataUri의 a.img 분기). */
+  const NEWS_THUMB_POOL=['newsroom_img/N-01.jpg','newsroom_img/N-02.jpg','newsroom_img/N-03.jpg','newsroom_img/N-04.jpg','newsroom_img/N-05.jpg','newsroom_img/N-06.jpg'];
+  /* [2026-07-29] 자동 수집 기사에도 같은 실사 썸네일을 "랜덤처럼" 배정하되, Math.random()이 아니라
+     기사 고유값(url/id)의 해시로 고른다 — 매 렌더링·새로고침마다 이미지가 바뀌어 깜빡이는 것을 막고
+     같은 기사에는 항상 같은 썸네일이 유지되도록 하기 위함. */
+  function pickNewsThumb(seed){
+    var s=String(seed||''), h=0;
+    for(var i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i)) & 0x7fffffff; }
+    return NEWS_THUMB_POOL[h % NEWS_THUMB_POOL.length];
+  }
   (function assignNewsroomThumbs(){
-    var pool=['newsroom_img/N-01.jpg','newsroom_img/N-02.jpg','newsroom_img/N-03.jpg','newsroom_img/N-04.jpg','newsroom_img/N-05.jpg','newsroom_img/N-06.jpg'];
     NEWSROOM_ARTICLES.forEach(function(a){
       var n=parseInt((a.id||'').replace('N-',''),10);
-      a.img = (n>=1 && n<=6) ? pool[n-1] : pool[Math.floor(Math.random()*pool.length)];
+      a.img = (n>=1 && n<=6) ? NEWS_THUMB_POOL[n-1] : pickNewsThumb(a.id||a.title);
     });
   })();
+  /* [2026-07-29] 매일 오전 8시 자동 수집(구글 뉴스 RSS) 기사 캐시 — 큐레이션된 NEWSROOM_ARTICLES와
+     별개로 관리하고, 렌더링/조회/삭제 시에는 findNewsroomArticle() 등 공용 헬퍼로 두 배열을 함께 다룬다. */
+  let AUTO_NEWS_CACHE=[];
+  let newsroomLastFetchedAt=null;
+  const AUTO_NEWS_COLORS={'크레디뷰':'#2563eb','테크핀레이팅스':'#0e7490'};
+  function findNewsroomArticle(id){
+    return NEWSROOM_ARTICLES.find(x=>x.id===id) || AUTO_NEWS_CACHE.find(x=>x.id===id);
+  }
+  function removeNewsroomArticle(id){
+    let idx=NEWSROOM_ARTICLES.findIndex(x=>x.id===id);
+    if(idx>=0){ NEWSROOM_ARTICLES.splice(idx,1); return; }
+    idx=AUTO_NEWS_CACHE.findIndex(x=>x.id===id);
+    if(idx>=0) AUTO_NEWS_CACHE.splice(idx,1);
+  }
+  /* 백엔드 GET /newsroom(매일 08:00 자동 수집 결과)을 불러와 AUTO_NEWS_CACHE에 반영.
+     백엔드가 없거나(데모 모드) 아직 수집된 기사가 없으면 조용히 빈 배열로 두고 큐레이션 기사만 보여준다. */
+  async function loadNewsroomAuto(){
+    const statusEl=document.getElementById('newsroomAutoStatus');
+    try{
+      const res=await apiFetch('/newsroom');
+      AUTO_NEWS_CACHE=(res.articles||[]).map(a=>({
+        id:'auto-'+a.id, source:a.source, category:a.category,
+        date:(a.publishedAt||'').slice(0,10) || new Date().toISOString().slice(0,10),
+        color:AUTO_NEWS_COLORS[a.category]||'#64748b', title:a.title, summary:a.summary, url:a.url, auto:true,
+        /* 실사 썸네일 6장 중 하나를 기사 url 해시로 고정 배정(큐레이션 기사와 동일한 시각적 톤 유지) */
+        img:pickNewsThumb(a.url||a.id),
+      }));
+      newsroomLastFetchedAt=res.lastFetchedAt;
+      if(statusEl){
+        statusEl.textContent = newsroomLastFetchedAt
+          ? `🔄 자동 수집 ${AUTO_NEWS_CACHE.length}건 · 마지막 업데이트 ${fmtDateTime(newsroomLastFetchedAt)} · 매일 오전 8시 자동 갱신`
+          : '자동 수집된 기사가 아직 없습니다 — 매일 오전 8시 자동 검색됩니다(관리자는 [지금 새로고침]으로 즉시 실행 가능)';
+      }
+    }catch(e){
+      AUTO_NEWS_CACHE=[];
+      if(statusEl) statusEl.textContent='⚠ 자동 수집 상태를 불러오지 못했습니다: '+(e.message||'');
+    }
+    renderNewsroomList();
+  }
+  document.getElementById('newsroomRefreshBtn')?.addEventListener('click', async ()=>{
+    const btn=document.getElementById('newsroomRefreshBtn');
+    btn.disabled=true; btn.textContent='🔄 검색 중...';
+    try{
+      const result=await apiFetch('/newsroom/refresh', {method:'POST'});
+      if(result.errors && result.errors.length) toast('⚠ 일부 오류: '+result.errors[0], 3200);
+      else toast(`✓ 뉴스 검색 완료 — ${result.saved}건 반영`);
+      await loadNewsroomAuto();
+    }catch(e){ toast('⚠ 새로고침 실패: '+(e.message||'')); }
+    finally{ btn.disabled=false; btn.textContent='🔄 지금 새로고침 (구글 뉴스 검색)'; }
+  });
   function renderNewsroomList(){
     const el=document.getElementById('newsroomList');
     if(!el) return;
-    const sorted=[...NEWSROOM_ARTICLES].sort((a,b)=>b.date.localeCompare(a.date));
+    const sorted=[...NEWSROOM_ARTICLES, ...AUTO_NEWS_CACHE].sort((a,b)=>b.date.localeCompare(a.date));
     el.innerHTML=sorted.map(a=>`
       <div class="newsroom-card" data-newsroom-id="${a.id}">
         <button class="nc-del" type="button" data-admin-only data-news-del="${a.id}" title="기사 삭제">✕</button>
         <img class="nc-thumb" src="${newsroomThumbDataUri(a)}" alt="${escapeHtml(a.source)} 기사 이미지">
         <div class="nc-body">
-          <div class="nc-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> ${a.date}</div>
+          <div class="nc-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> ${a.date}${a.auto?' <span class="badge b-ok" style="font-size:10px">자동</span>':''}</div>
           <div class="nc-title">${escapeHtml(a.title)}</div>
           <div class="nc-summary">${escapeHtml(a.summary)}</div>
         </div>
@@ -6230,16 +6784,15 @@
       card.addEventListener('click', ()=>openNewsroomArticle(card.dataset.newsroomId));
     });
     /* [2026-07-27] 관리자 모드에서만 노출되는 삭제 버튼 — 카드 클릭(기사 열기)과 겹치지 않도록
-       stopPropagation 후, 확인창을 거쳐 NEWSROOM_ARTICLES에서 제거하고 목록을 다시 그린다. */
+       stopPropagation 후, 확인창을 거쳐 제거하고 목록을 다시 그린다(큐레이션/자동수집 배열 모두 지원). */
     el.querySelectorAll('[data-news-del]').forEach(btn=>{
       btn.addEventListener('click', e=>{
         e.stopPropagation();
         const id=btn.dataset.newsDel;
-        const art=NEWSROOM_ARTICLES.find(x=>x.id===id);
+        const art=findNewsroomArticle(id);
         if(!art) return;
         openConfirm('기사를 삭제할까요?', `"${art.title}" 기사를 뉴스룸 목록에서 삭제합니다.`, ()=>{
-          const idx=NEWSROOM_ARTICLES.findIndex(x=>x.id===id);
-          if(idx>=0) NEWSROOM_ARTICLES.splice(idx,1);
+          removeNewsroomArticle(id);
           renderNewsroomList();
           toast('✓ 기사가 삭제되었습니다');
         });
@@ -6247,15 +6800,20 @@
     });
   }
   function openNewsroomArticle(id){
-    const a=NEWSROOM_ARTICLES.find(x=>x.id===id);
+    const a=findNewsroomArticle(id);
     if(!a) return;
     /* [2026-07-27] "크레디뷰 사이트"가 아니라 해당 기사가 실제 노출된 매체 페이지로 이동하도록 변경.
        각 기사별 URL(newsroomArticleUrl)로 새 탭에서 열고, 링크 문구는 "사이트로 바로가기"로 통일. */
+    /* [2026-07-29] 자동 수집된 기사(a.auto===true)는 검색 API의 짧은 요약(snippet)만 갖고 있고 전체
+       본문(content)이 없음 — 이 경우 요약과 "자동 수집" 안내를 보여주고 전체 기사는 원문 링크로 유도한다. */
+    const bodyHtml = a.content
+      ? `<div class="nm-content">${escapeHtml(a.content)}</div>`
+      : `<div class="nm-content">${escapeHtml(a.summary||'')}</div><div class="muted" style="font-size:12px;margin-top:10px">※ 이 기사는 매일 오전 8시 자동 검색으로 수집된 결과이며, 검색 결과의 짧은 요약(스니펫)만 제공됩니다. 전체 기사는 아래 원문 링크에서 확인해 주세요.</div>`;
     document.getElementById('newsroomModalBody').innerHTML=`
       <img class="nm-thumb" src="${newsroomThumbDataUri(a)}" alt="${escapeHtml(a.source)} 기사 이미지">
-      <div class="nm-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> <span class="badge b-blue">${escapeHtml(a.category)}</span> ${a.date}</div>
+      <div class="nm-meta"><span class="badge b-gray">${escapeHtml(a.source)}</span> <span class="badge b-blue">${escapeHtml(a.category)}</span> ${a.date}${a.auto?' <span class="badge b-ok">자동수집</span>':''}</div>
       <div class="nm-title">${escapeHtml(a.title)}</div>
-      <div class="nm-content">${escapeHtml(a.content)}</div>
+      ${bodyHtml}
       <div style="margin-top:18px">
         <a class="btn pri sm" href="${newsroomArticleUrl(a)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(a.source)} 페이지로 바로가기</a>
       </div>`;
@@ -6274,6 +6832,22 @@
   }
   let caseScanToken=0;
   let lastCaseSearchTerm='';
+  /* 사례 답변 원문에 리터럴로 섞여있는 HTML 엔티티(&gt; 등)를 정리하고 줄바꿈을 살려 표시.
+     - '>'(&gt;)는 사용자 요청대로 화면 표시에서 제외하고 줄바꿈으로 대체
+     - "…적용됩니다.2. 조달청"처럼 붙어있는 번호 목록(1.~9.)도 줄바꿈으로 분리
+     - 마지막에 escapeHtml로 XSS 방지 후 개행만 <br>로 복원 */
+  function formatCaseAnswer(text){
+    let t=(text||'')
+      .replace(/&gt;/g,'\n')
+      .replace(/&lt;/g,'')
+      .replace(/&nbsp;/g,' ')
+      .replace(/&quot;/g,'"')
+      .replace(/&amp;/g,'&');
+    t=t.replace(/\r\n|\r|\n/g,'\n');
+    t=t.replace(/([^\d\s])\s*([1-9]\.)\s+/g,'$1\n$2 ');
+    t=t.split('\n').map(s=>s.trim()).filter(Boolean).join('\n');
+    return escapeHtml(t).replace(/\n/g,'<br>');
+  }
   function runCaseSearch(query){
     lastCaseSearchTerm=query;
     const myToken=++caseScanToken;
@@ -6325,7 +6899,7 @@
           scanInner.style.transform=`translateY(-${targetScroll}px)`;
         }
         scanLabel.textContent='✓ 유사 사례를 찾았습니다';
-        resultBox.innerHTML=`<div class="alert blue"><span>ℹ</span><div><b>${escapeHtml(match.title)}</b> 사례(유사도 ${match.similarity}%, ${escapeHtml(personLabel(match.assigneeId))} 답변)에 해당하는 것으로 보입니다.<br>${escapeHtml(match.a)}<div style="margin-top:8px"><button class="btn sm" onclick="openDrawer('case','${match.id}')">사례 상세 보기</button></div></div></div>`;
+        resultBox.innerHTML=`<div class="alert blue"><span>ℹ</span><div><b>${escapeHtml(match.title)}</b> 사례(유사도 ${match.similarity}%, ${escapeHtml(personLabel(match.assigneeId))} 답변)에 해당하는 것으로 보입니다.<br>${formatCaseAnswer(match.a)}<div style="margin-top:8px"><button class="btn sm" onclick="openDrawer('case','${match.id}')">사례 상세 보기</button></div></div></div>`;
       }else{
         scanLabel.textContent='검색 완료 — 일치하는 사례 없음';
         resultBox.innerHTML=`<div class="alert warn"><span>⚠</span><div>"${escapeHtml(query)}"에 대한 일치하는 사례를 찾지 못했습니다. 다른 키워드로 검색해보세요.</div></div>`;
@@ -6985,6 +7559,7 @@
     appendChatBubble('bot', '말씀하신 내용을 확인했습니다. 아래와 같이 정제하여 담당자에게 아마란스 쪽지로 요청드릴 수 있도록 준비했습니다.');
     resultBox.innerHTML=`<div id="guideActionContent" class="mt10"></div>`;
     renderGuideAction('assign');
+    setGuideRefreshMode(true); /* 정제 완료 → [새로고침]/[다시 의뢰하기]로 전환 */
   }
   /* 동적으로 생성된 칩이라 전역 .chip 단일선택 스크립트가 적용되지 않으므로 직접 토글 + 선택 시 콘텐츠 렌더링 */
   function wireGuideActionChips(){
@@ -7460,7 +8035,23 @@
       }
     });
   });
+  /* [2026-07-28] 정제가 끝나면 [확인하기]→[새로고침], [초기화]→[다시 의뢰하기]로 라벨을 바꿔,
+     문어체·문장 스타일 드롭박스를 바꾼 뒤 [새로고침]을 누르면 마지막 질의로 다시 정제되도록 함.
+     새로고침은 채팅 말풍선을 다시 붙이지 않고 정제 패널(renderGuideAction 'assign')만 재실행한다. */
+  let guideRefreshMode=false;
+  function setGuideRefreshMode(on){
+    guideRefreshMode=on;
+    const ask=document.getElementById('guideAskBtn');
+    const reset=document.getElementById('guideResetBtn');
+    if(ask) ask.innerHTML = on ? '🔄 새로고침' : '🔍 확인하기';
+    if(reset) reset.innerHTML = on ? '↩ 다시 의뢰하기' : '✕ 초기화';
+  }
   document.getElementById('guideAskBtn')?.addEventListener('click', ()=>{
+    /* 새로고침 모드: 마지막 질의를 현재 문어체/문장 스타일 선택값으로 다시 정제 */
+    if(guideRefreshMode){
+      if(currentGuideQuery){ renderGuideAction('assign'); }
+      return;
+    }
     const input=document.getElementById('guideQueryInput');
     const q=input.value.trim();
     if(!q){ toast('⚠ 궁금한 내용을 입력해 주세요'); return; }
@@ -7478,6 +8069,7 @@
   function resetGuideFlow(){
     guideRunToken++;
     currentGuideMatch=null; currentGuideQuery='';
+    setGuideRefreshMode(false); /* [새로고침]/[다시 의뢰하기] → [확인하기]/[초기화]로 원복 */
     document.getElementById('guideQueryInput').value='';
     document.getElementById('guideProgressBox').style.display='none';
     document.getElementById('guideResultBox').innerHTML='';
