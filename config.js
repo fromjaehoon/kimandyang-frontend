@@ -9,4 +9,4 @@
 //
 // ⚠️ 이 파일에는 절대 OpenAI/아마란스 같은 비밀 키를 넣지 마세요.
 //    (이 파일은 브라우저에 그대로 노출됩니다. 비밀 키는 오직 백엔드 서버의 환경변수에만 둡니다.)
-window.KIMYANG_API_BASE = "";
+window.KIMYANG_API_BASE = "https://kimandyang-backend.onrender.com";
